@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    02/15/2024  22:01:22  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    02/17/2024  23:50:12  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.4.0, INVOKED BY:
@@ -21,15 +21,15 @@ LINK MAP OF MODULE:  .\Objects\Project (MAIN)
 
             * * * * * * *   D A T A   M E M O R Y   * * * * * * *
             REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
-            DATA    0008H     0001H     UNIT         _DATA_GROUP_
-            IDATA   0009H     0001H     UNIT         ?STACK
+            DATA    0008H     0002H     UNIT         _DATA_GROUP_
+            IDATA   000AH     0001H     UNIT         ?STACK
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
-            CODE    0003H     0015H     UNIT         ?PR?_DELAY?MAIN
-            CODE    0018H     000CH     UNIT         ?C_C51STARTUP
-            CODE    0024H     000AH     UNIT         ?PR?LEDRUNNING?MAIN
-            CODE    002EH     0005H     UNIT         ?PR?MAIN?MAIN
+            CODE    0003H     0040H     UNIT         ?PR?LEDRUNNING?MAIN
+            CODE    0043H     0020H     UNIT         ?PR?_DELAY?MAIN
+            CODE    0063H     000CH     UNIT         ?C_C51STARTUP
+            CODE    006FH     0005H     UNIT         ?PR?MAIN?MAIN
 
 
 
@@ -45,7 +45,10 @@ SEGMENT                          DATA_GROUP
 ?PR?MAIN?MAIN                  -----    -----
   +--> ?PR?LEDRUNNING?MAIN
 
-?PR?LEDRUNNING?MAIN            0008H    0001H
+?PR?LEDRUNNING?MAIN            -----    -----
+  +--> ?PR?_DELAY?MAIN
+
+?PR?_DELAY?MAIN                0008H    0002H
 
 
 
@@ -56,12 +59,12 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
 
   -------         MODULE        MAIN
   C:0000H         SYMBOL        _ICE_DUMMY_
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  02/17/2024  23:50:12  PAGE 2
+
+
   D:0080H         PUBLIC        P0
   D:0090H         PUBLIC        P1
   D:00A0H         PUBLIC        P2
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  02/15/2024  22:01:22  PAGE 2
-
-
   D:00B0H         PUBLIC        P3
   D:00C0H         PUBLIC        P4
   D:00C8H         PUBLIC        P5
@@ -70,47 +73,80 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   D:00A8H         PUBLIC        IE
   D:00B8H         PUBLIC        IP
   D:00D8H         PUBLIC        CCON
-  C:002EH         PUBLIC        main
+  C:006FH         PUBLIC        main
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
-  C:0024H         PUBLIC        LEDRunning
+  C:0003H         PUBLIC        LEDRunning
   B:00A0H.5       PUBLIC        HC138_A
   B:00A0H.6       PUBLIC        HC138_B
   B:00A0H.7       PUBLIC        HC138_C
-  C:0003H         PUBLIC        _Delay
+  C:0049H         PUBLIC        _Delay
   D:00D0H         PUBLIC        PSW
+  C:0043H         SYMBOL        L?0028
+  C:0045H         SYMBOL        L?0029
+  -------         PROC          L?0027
+  -------         ENDPROC       L?0027
+  C:0043H         SYMBOL        L?0028
+  C:0045H         SYMBOL        L?0029
   -------         PROC          _DELAY
-  D:0006H         SYMBOL        t
-  C:0003H         LINE#         9
-  C:0003H         LINE#         10
-  C:0003H         LINE#         11
-  C:000DH         LINE#         12
-  C:0017H         LINE#         13
+  D:0006H         SYMBOL        xms
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  -------         ENDDO         
+  C:0049H         LINE#         10
+  C:0049H         LINE#         11
+  C:0049H         LINE#         13
+  C:0053H         LINE#         14
+  C:0053H         LINE#         17
+  C:0054H         LINE#         18
+  C:0057H         LINE#         19
+  C:005AH         LINE#         21
+  C:005AH         LINE#         22
+  C:005DH         LINE#         23
+  C:0060H         LINE#         24
+  C:0062H         LINE#         25
   -------         ENDPROC       _DELAY
   -------         PROC          LEDRUNNING
   -------         DO            
-  D:0008H         SYMBOL        i
+  D:0005H         SYMBOL        i
   -------         ENDDO         
-  C:0024H         LINE#         14
-  C:0024H         LINE#         15
-  C:0024H         LINE#         17
-  C:0026H         LINE#         18
-  C:0028H         LINE#         19
-  C:002AH         LINE#         32
-  C:002DH         LINE#         33
+  C:0003H         LINE#         27
+  C:0003H         LINE#         28
+  C:0003H         LINE#         30
+  C:0005H         LINE#         31
+  C:0007H         LINE#         32
+  C:0009H         LINE#         33
+  C:000BH         LINE#         34
+  C:000BH         LINE#         35
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  02/17/2024  23:50:12  PAGE 3
+
+
+  C:000CH         LINE#         36
+  C:000FH         LINE#         37
+  C:0012H         LINE#         38
+  C:0015H         LINE#         39
+  C:0019H         LINE#         40
+  C:001BH         LINE#         41
+  C:001BH         LINE#         42
+  C:0026H         LINE#         43
+  C:0029H         LINE#         44
+  C:002DH         LINE#         45
+  C:002FH         LINE#         46
+  C:002FH         LINE#         47
+  C:003BH         LINE#         48
+  C:003EH         LINE#         49
+  C:0042H         LINE#         50
   -------         ENDPROC       LEDRUNNING
   -------         PROC          MAIN
-  C:002EH         LINE#         34
-  C:002EH         LINE#         35
-  C:002EH         LINE#         36
-  C:002EH         LINE#         37
-  C:002EH         LINE#         38
-  C:0031H         LINE#         39
+  C:006FH         LINE#         51
+  C:006FH         LINE#         52
+  C:006FH         LINE#         53
+  C:006FH         LINE#         54
+  C:006FH         LINE#         55
+  C:0072H         LINE#         56
   -------         ENDPROC       MAIN
   -------         ENDMOD        MAIN
 
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_DELAY?MAIN
-
-Program Size: data=10.0 xdata=0 code=51
-LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)
+Program Size: data=11.0 xdata=0 code=116
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
