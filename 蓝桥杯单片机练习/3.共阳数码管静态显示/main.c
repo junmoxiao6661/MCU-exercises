@@ -23,13 +23,6 @@ void InitHC138(u8 n)
 		case 7: P2=(P2&0x1f)|0xe0;break;
 	}
 }
-void ShowSMG_Bit(u8 dat,u8 pos)
-{
-	InitHC138(6);
-	P0=0x01<<pos;
-	InitHC138(7);
-	P0=dat;
-}
 void Delay(u16 xms)		//@11.0592MHz
 {
 	unsigned char i, j;
@@ -44,6 +37,14 @@ void Delay(u16 xms)		//@11.0592MHz
 		} while (--i);
 	}
 }
+void ShowSMG_Bit(u8 dat,u8 pos)
+{
+	InitHC138(6);// 段选
+	P0=0x01<<pos;
+	InitHC138(7); //位选
+	P0=dat;
+}
+
 void SMG_Static()
 {
 	u8 i,j;
@@ -69,6 +70,8 @@ void main()
 	
 	while(1)
 	{
+		InitHC138(4);
+		P0=0xFF;
 		SMG_Static();
 	}
 }

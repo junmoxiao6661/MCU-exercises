@@ -1,9 +1,9 @@
-C51 COMPILER V9.54   MAIN                                                                  12/01/2023 11:53:20 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/18/2024 01:03:10 PAGE 1   
 
 
-C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN .\Objects\main.obj
-COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
                     -st) OBJECT(.\Objects\main.obj)
 
 line level    source
@@ -33,61 +33,67 @@ line level    source
   23   2                      case 7: P2=(P2&0x1f)|0xe0;break;
   24   2              }
   25   1      }
-  26          void ShowSMG_Bit(u8 dat,u8 pos)
+  26          void Delay(u16 xms)             //@11.0592MHz
   27          {
-  28   1              InitHC138(6);
-  29   1              P0=0x01<<pos;
-  30   1              InitHC138(7);
-  31   1              P0=dat;
-  32   1      }
-  33          void Delay(u16 xms)             //@11.0592MHz
-  34          {
-  35   1              unsigned char i, j;
-  36   1              while(xms--)
-  37   1              {
-  38   2                      _nop_();
-  39   2                      i = 2;
-  40   2                      j = 199;
-  41   2                      do
-  42   2                      {
-  43   3                              while (--j);
-  44   3                      } while (--i);
-  45   2              }
-  46   1      }
-  47          void SMG_Static()
-  48          {
-  49   1              u8 i,j;
-  50   1              for(i=0;i<8;i++)
-  51   1              {
-  52   2                      for(j=0;j<=10;j++)
-  53   2                      {
-  54   3                              ShowSMG_Bit(SMG[j],i);
-C51 COMPILER V9.54   MAIN                                                                  12/01/2023 11:53:20 PAGE 2   
+  28   1              unsigned char i, j;
+  29   1              while(xms--)
+  30   1              {
+  31   2                      _nop_();
+  32   2                      i = 2;
+  33   2                      j = 199;
+  34   2                      do
+  35   2                      {
+  36   3                              while (--j);
+  37   3                      } while (--i);
+  38   2              }
+  39   1      }
+  40          void ShowSMG_Bit(u8 dat,u8 pos)
+  41          {
+  42   1              InitHC138(6);// 段选
+  43   1              P0=0x01<<pos;
+  44   1              InitHC138(7); //位选
+  45   1              P0=dat;
+  46   1              // 消影
+  47   1              //Delay(1);
+  48   1              //P0=0xFF;
+  49   1      }
+  50          
+  51          void SMG_Static()
+  52          {
+  53   1              u8 i,j;
+  54   1              for(i=0;i<8;i++)
+C51 COMPILER V9.60.7.0   MAIN                                                              02/18/2024 01:03:10 PAGE 2   
 
-  55   3                              Delay(1000);
-  56   3                      }
-  57   2              }
-  58   1              for(i=0;i<=10;i++)
-  59   1              {
-  60   2                      InitHC138(6);
-  61   2                      P0=0xFF;
-  62   2                      InitHC138(7);
-  63   2                      P0=SMG[i];
-  64   2                      Delay(1000);
-  65   2              }
-  66   1      }
-  67          void main()
-  68          {
-  69   1              
-  70   1              while(1)
-  71   1              {
-  72   2                      SMG_Static();
-  73   2              }
-  74   1      }
+  55   1              {
+  56   2                      for(j=0;j<=10;j++)
+  57   2                      {
+  58   3                              ShowSMG_Bit(SMG[j],i);
+  59   3                              Delay(1000);
+  60   3                      }
+  61   2              }
+  62   1              for(i=0;i<=10;i++)
+  63   1              {
+  64   2                      InitHC138(6);
+  65   2                      P0=0xFF;
+  66   2                      InitHC138(7);
+  67   2                      P0=SMG[i];
+  68   2                      Delay(1000);
+  69   2              }
+  70   1      }
+  71          void main()
+  72          {
+  73   1              
+  74   1              while(1)
+  75   1              {
+  76   2                      InitHC138(4);
+  77   2                      P0=0xFF;
+  78   2                      SMG_Static();
+  79   2              }
+  80   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    221    ----
+   CODE SIZE        =    229    ----
    CONSTANT SIZE    =     11    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

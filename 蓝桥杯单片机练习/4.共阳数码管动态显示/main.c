@@ -37,6 +37,7 @@ void InitHC138(u8 n)
 		case 7: P2=(P2&0x1f)|0xe0;break;
 	}
 }
+
 void DisplaySMG_Bit(u8 value,u8 pos)
 {
 	InitHC138(6);
@@ -71,11 +72,12 @@ void main()
 	
 	while(1)
 	{
-		
+		InitHC138(4);
+		P0=0xFF;
 		Display_Dynamic();
 		month++;
 		if(month>12)
 			month=1;
-		DelaySMG(100);
+		DelaySMG(100);//LED短暂显示，保证计数过程不会中断显示
 	}
 }

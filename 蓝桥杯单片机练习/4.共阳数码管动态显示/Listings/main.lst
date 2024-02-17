@@ -1,10 +1,10 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2024 11:44:57 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/18/2024 01:13:28 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN .\Objects\main.obj
 COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
-                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+                    -st) OBJECT(.\Objects\main.obj)
 
 line level    source
 
@@ -17,84 +17,86 @@ line level    source
    7          sbit HC138_B=P2^6;
    8          sbit HC138_C=P2^7;
    9          
-  10          void Delay(u16 x)   //@12.000MHz
+  10          void Delay(u16 x)               //@12.000MHz
   11          {
-  12   1        unsigned char i, j;
-  13   1        while(x--)
-  14   1        {
-  15   2          i = 12;
-  16   2          j = 169;
-  17   2          do
-  18   2          {
-  19   3            while (--j);
-  20   3          } while (--i);
-  21   2        }
+  12   1              unsigned char i, j;
+  13   1              while(x--)
+  14   1              {
+  15   2                      i = 12;
+  16   2                      j = 169;
+  17   2                      do
+  18   2                      {
+  19   3                              while (--j);
+  20   3                      } while (--i);
+  21   2              }
   22   1      }
   23          
   24          u8 code SMG[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0xbf};
   25          void InitHC138(u8 n)
   26          {
-  27   1        switch(n)
-  28   1        {
-  29   2          case 0: HC138_C=0;HC138_B=0;HC138_A=0;break;
-  30   2          case 1: HC138_C=0;HC138_B=0;HC138_A=1;break;
-  31   2          case 2: HC138_C=0;HC138_B=1;HC138_A=0;break;
-  32   2          case 3: HC138_C=0;HC138_B=1;HC138_A=1;break;
-  33   2          case 4: P2=(P2&0x1f)|0x80;break;
-  34   2          //P2=(P2&0x1f)|0x80;
-  35   2          case 5: P2=(P2&0x1f)|0xa0;break;
-  36   2          case 6: P2=(P2&0x1f)|0xc0;break;
-  37   2          case 7: P2=(P2&0x1f)|0xe0;break;
-  38   2        }
+  27   1              switch(n)
+  28   1              {
+  29   2                      case 0: HC138_C=0;HC138_B=0;HC138_A=0;break;
+  30   2                      case 1: HC138_C=0;HC138_B=0;HC138_A=1;break;
+  31   2                      case 2: HC138_C=0;HC138_B=1;HC138_A=0;break;
+  32   2                      case 3: HC138_C=0;HC138_B=1;HC138_A=1;break;
+  33   2                      case 4: P2=(P2&0x1f)|0x80;break;
+  34   2                      //P2=(P2&0x1f)|0x80;
+  35   2                      case 5: P2=(P2&0x1f)|0xa0;break;
+  36   2                      case 6: P2=(P2&0x1f)|0xc0;break;
+  37   2                      case 7: P2=(P2&0x1f)|0xe0;break;
+  38   2              }
   39   1      }
-  40          void DisplaySMG_Bit(u8 value,u8 pos)
-  41          {
-  42   1        InitHC138(6);
-  43   1        P0=0x01<<pos;
-  44   1        InitHC138(7);
-  45   1        P0=value;
-  46   1        Delay(2);
-  47   1        P0=0xFF;
-  48   1        
-  49   1      }
-  50          u8 month=1;
-  51          void Display_Dynamic()
-  52          {
-  53   1        DisplaySMG_Bit(SMG[2],0);
-  54   1        DisplaySMG_Bit(SMG[0],1);
-C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2024 11:44:57 PAGE 2   
+  40          
+  41          void DisplaySMG_Bit(u8 value,u8 pos)
+  42          {
+  43   1              InitHC138(6);
+  44   1              P0=0x01<<pos;
+  45   1              InitHC138(7);
+  46   1              P0=value;
+  47   1              Delay(2);
+  48   1              P0=0xFF;
+  49   1              
+  50   1      }
+  51          u8 month=1;
+  52          void Display_Dynamic()
+  53          {
+  54   1              DisplaySMG_Bit(SMG[2],0);
+C51 COMPILER V9.60.7.0   MAIN                                                              02/18/2024 01:13:28 PAGE 2   
 
-  55   1        DisplaySMG_Bit(SMG[2],2);
-  56   1        DisplaySMG_Bit(SMG[3],3);
-  57   1        DisplaySMG_Bit(SMG[10],4);
-  58   1        DisplaySMG_Bit(SMG[10],5);
-  59   1        DisplaySMG_Bit(SMG[month/10],6);
-  60   1        DisplaySMG_Bit(SMG[month%10],7);
-  61   1      }
-  62          void DelaySMG(u16 t)
-  63          {
-  64   1        while(t--)
-  65   1        {
-  66   2          Display_Dynamic();
-  67   2        }
-  68   1      }
-  69          void main()
-  70          {
-  71   1        
-  72   1        while(1)
-  73   1        {
-  74   2          
-  75   2          Display_Dynamic();
-  76   2          month++;
-  77   2          if(month>12)
-  78   2            month=1;
-  79   2          DelaySMG(100);
-  80   2        }
-  81   1      }
+  55   1              DisplaySMG_Bit(SMG[0],1);
+  56   1              DisplaySMG_Bit(SMG[2],2);
+  57   1              DisplaySMG_Bit(SMG[3],3);
+  58   1              DisplaySMG_Bit(SMG[10],4);
+  59   1              DisplaySMG_Bit(SMG[10],5);
+  60   1              DisplaySMG_Bit(SMG[month/10],6);
+  61   1              DisplaySMG_Bit(SMG[month%10],7);
+  62   1      }
+  63          void DelaySMG(u16 t)
+  64          {
+  65   1              while(t--)
+  66   1              {
+  67   2                      Display_Dynamic();
+  68   2              }
+  69   1      }
+  70          void main()
+  71          {
+  72   1              
+  73   1              while(1)
+  74   1              {
+  75   2                      InitHC138(4);
+  76   2                      P0=0xFF;
+  77   2                      Display_Dynamic();
+  78   2                      month++;
+  79   2                      if(month>12)
+  80   2                              month=1;
+  81   2                      DelaySMG(100);//LED短暂显示，保证计数过程不会中断显示
+  82   2              }
+  83   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    300    ----
+   CODE SIZE        =    308    ----
    CONSTANT SIZE    =     11    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
