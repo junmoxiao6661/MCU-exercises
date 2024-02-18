@@ -61,7 +61,7 @@ void Timer0_Init()		//50毫秒@12.000MHz
     TMOD |= 0x01;			//设置定时器模式
     TL0 = 0xB0;				//设置定时初始值
     TH0 = 0x3C;				//设置定时初始值
-    TF0 = 0;				//清除TF0标志
+    TF0 = 0;				//清除TF0标志，开始时不挤时
     EA=1;
     //TR0 = 1;				//定时器0开始计时
     ET0 = 1;				//使能定时器0中断
@@ -130,6 +130,7 @@ void ScanKey()
 			{
 				DisplayTime();//按下时任然显示
 			}
+			
         }
 		
     }
@@ -141,10 +142,11 @@ void ScanKey()
 			min=0;
 			sec=0;
 			msec=0;
-			while(S5==0);
+			while(S5==0)
 			{
 				DisplayTime();
 			}
+			
         }
 		
     }
@@ -152,10 +154,11 @@ void ScanKey()
 }
 void main()
 {
+	InitHC138(4);
+	P0=0xFF;
     Timer0_Init();
     while(1)
     {
-		
 		ScanKey();
 		DisplayTime();
     }
