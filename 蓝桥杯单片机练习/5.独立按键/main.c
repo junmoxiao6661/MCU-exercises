@@ -59,7 +59,7 @@ void ScanKeys_Alone() //按键扫描
 				stat_k=0;
 			}
 		}
-		while(S7==0);//松手检测
+		while(S7==0);//松手检测 很重要 当松手后才继续执行后面的代码
 	}
 	if(S6==0)
 	{
