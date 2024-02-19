@@ -1,0 +1,86 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/19/2024 13:19:57 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <INTRINS.H>
+   3          
+   4          typedef unsigned char u8;
+   5          typedef unsigned int u16;
+   6          
+   7          u8 urdat;
+   8          void InitUart()
+   9          {
+  10   1              PCON &= 0x7F;           //波特率不倍速
+  11   1              SCON = 0x50;            //8位数据,可变波特率
+  12   1              AUXR &= 0xBF;           //定时器时钟12T模式
+  13   1              AUXR &= 0xFE;           //串口1选择定时器1为波特率发生器
+  14   1      
+  15   1              TMOD &= 0x0F;           //设置定时器模式
+  16   1              TMOD |= 0x20;           //设置定时器模式
+  17   1              TL1 = 0xFD;                     //设置定时初始值
+  18   1              TH1 = 0xFD;                     //设置定时重载值
+  19   1              ET1 = 0;                        //禁止定时器中断
+  20   1              TR1 = 1;                        //定时器1开始计时
+  21   1              ES = 1; //串口中断
+  22   1              EA = 1;   //总中断     
+  23   1      
+  24   1      }
+  25          
+  26          
+  27          
+  28          void SendByte(u8 dat)
+  29          {
+  30   1              /*TI：发送中断标志位
+  31   1              可寻址标志位。TI=1表示帧发送结束，
+  32   1              TI可由软件清“0”。*/
+  33   1              SBUF=dat;
+  34   1              while(TI==0);
+  35   1              TI=0;
+  36   1      }
+  37          void ServiceUart() interrupt 4 // 串口中断
+  38          {
+  39   1              /*RI：接收中断标志位
+  40   1              可寻址标志位。接收完第8位数据后，
+  41   1              该位由硬件置位，在其他工作方式下，
+  42   1              该位由硬件置位，RI=1表示帧接收完成。*/
+  43   1              if(RI==1)
+  44   1              {
+  45   2                      RI=0;
+  46   2                      urdat=SBUF;
+  47   2                      SendByte(urdat+1);
+  48   2              }
+  49   1              
+  50   1      }
+  51          void main()
+  52          {
+  53   1              InitUart();
+  54   1              SendByte(0x5a);
+C51 COMPILER V9.60.7.0   MAIN                                                              02/19/2024 13:19:57 PAGE 2   
+
+  55   1              SendByte(0xa5);
+  56   1              while(1)
+  57   1              {
+  58   2                      
+  59   2              }
+  60   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     87    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
