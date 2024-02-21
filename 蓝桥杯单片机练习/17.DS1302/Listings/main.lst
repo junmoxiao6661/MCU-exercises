@@ -1,0 +1,328 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 15:28:20 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          
+   2          /*#include <STC15F2K60S2.H>
+   3          #include "ds1302.h"
+   4          
+   5          
+   6          typedef unsigned char u8;
+   7          typedef unsigned int u16;
+   8          
+   9          
+  10          u8 code SMG[]= {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0xbf};
+  11          
+  12          u8 Time[3]={0x11,0x00,0x50};
+  13          void Delay(u16 xms)     //@12.000MHz
+  14          {
+  15                  while(xms--)
+  16                  {
+  17                          unsigned char i, j;
+  18          
+  19                          i = 2;
+  20                          j = 239;
+  21                          do
+  22                          {
+  23                                  while (--j);
+  24                          } while (--i);
+  25                  }
+  26          }
+  27          
+  28          void InitHC138(u8 n)
+  29          {
+  30                  switch(n)
+  31                  {
+  32                          case 0 :P2=(P2&0x1F)|0x00; break; //先&再|
+  33                          case 4 :P2=(P2&0x1F)|0x80; break;
+  34                          case 5 :P2=(P2&0x1F)|0xA0; break;
+  35                          case 6 :P2=(P2&0x1F)|0xC0; break;
+  36                          case 7 :P2=(P2&0x1F)|0xE0; break;
+  37                  }
+  38          }
+  39          void ShowSMG(u8 value,u8 pos)
+  40          {
+  41                  InitHC138(6);
+  42                  P0=0x01<<pos;
+  43                  InitHC138(7);
+  44                  P0=value;
+  45                  Delay(2);
+  46                  P0=0xFF;
+  47          }
+  48          
+  49          void DisplayTime()
+  50          {
+  51                  ShowSMG(SMG[Time[0]/16],0);
+  52                  ShowSMG(SMG[Time[0]%16],1);
+  53                  ShowSMG(SMG[10],2);
+  54                  ShowSMG(SMG[Time[1]/16],3);
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 15:28:20 PAGE 2   
+
+  55                  ShowSMG(SMG[Time[1]%16],4);
+  56                  ShowSMG(SMG[10],5);
+  57                  ShowSMG(SMG[Time[2]/16],6);
+  58                  ShowSMG(SMG[Time[2]%16],7);
+  59          }
+  60          void Set_Ds1302_pause(void)
+  61          
+  62          {
+  63          
+  64                  unsigned char temp;
+  65                  Write_Ds1302_Byte(0x8E,0X00); //允许写入
+  66                  temp=Read_Ds1302_Byte(0x81);//读当前时钟
+  67                  Write_Ds1302_Byte(0x80,temp|0x80);//置秒位高位为1,保持当前时钟
+  68                  Write_Ds1302_Byte(0x8E,0x80); //禁止写入
+  69          
+  70          }
+  71          
+  72          void main()
+  73          {
+  74                  InitHC138(4);
+  75                  P0=0xFF;
+  76                  InitHC138(0);
+  77                  Set_Rtc(Time);
+  78                  while(1)
+  79                  {
+  80                          Read_Rtc(Time);
+  81                          DisplayTime();
+  82                          if(Time[1]/16+Time[1]%16==1)
+  83                          {
+  84                                  Set_Ds1302_pause();
+  85                          }
+  86                  }
+  87          }*/
+  88          #include "reg52.h"
+  89          #include "ds1302.h"
+  90          sbit S4 = P3^3;
+  91          sbit S5 = P3^2;
+  92          sbit S6 = P3^1;
+  93          //定义动态显示中单个数码管点亮时长
+  94          #define TSMG  500
+  95          //-------共阳数码管的段码编码表（无小数点）--------
+  96          //0 1 2 3 4 5 6 7 8 9 A b C D E F - .
+  97          unsigned char code SMG_NoDot[18]={0xc0,0xf9,
+  98              0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,
+  99              0x88,0x83,0xc6,0xc0,0x86,0x8e,0xbf,0x7f};
+ 100          //-----------------------------------------------
+ 101          unsigned char code READ_RTC_ADDR[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8b, 0x8d};
+ 102          unsigned char code WRITE_RTC_ADDR[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8a, 0x8c};
+ 103          unsigned char TIME[7] = {0x24, 0x58, 0x23, 0x19, 0x04, 0x06, 0x20};
+ 104                                 /* 秒    分    时    日     月   星期   年 */
+ 105          unsigned char F_pause = 0;    //暂停/启动的标志
+ 106          unsigned char hour = 0;        //时
+ 107          unsigned char min = 0;        //分
+ 108          unsigned char sec = 0;        //秒
+ 109          
+ 110          //==============数码管动态显示专用延时函数=============
+ 111          void DelaySMG(unsigned int t)
+ 112          {
+ 113   1        while(t--);
+ 114   1      }
+ 115          //==================设置选通的锁存器===================
+ 116          void Set_HC573(unsigned char channel, unsigned char dat)
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 15:28:20 PAGE 3   
+
+ 117          {
+ 118   1        P0 = dat;                      //待设置数据
+ 119   1        switch(channel)                //选通锁存器
+ 120   1        {
+ 121   2          case 4:
+ 122   2            P2 = (P2 & 0x1f) | 0x80;  //Y4输出0，LED控制
+ 123   2          break;
+ 124   2          case 5:
+ 125   2            P2 = (P2 & 0x1f) | 0xa0;  //Y5输出0，蜂鸣器和继电器控制
+ 126   2          break;
+ 127   2          case 6:
+ 128   2            P2 = (P2 & 0x1f) | 0xc0;  //Y6输出0，数码管位选
+ 129   2          break;
+ 130   2          case 7:
+ 131   2            P2 = (P2 & 0x1f) | 0xe0;  //Y7输出0，数码管段码
+ 132   2          break;
+ 133   2          case 0:
+ 134   2            P2 = (P2 & 0x1f) | 0x00;  //所有锁存器不选择
+ 135   2          break;
+ 136   2        }
+ 137   1        P2 = (P2 & 0x1f) | 0x00;      //设置完成，关闭全部锁存器
+ 138   1      }
+ 139          //=================单个数码管动态显示=================
+ 140          void DisplaySMG_Bit(unsigned char pos, unsigned char value)
+ 141          {
+ 142   1        Set_HC573(6, 0x01 << pos);    //数码管的段位
+ 143   1        Set_HC573(7, value);          //数码管显示内容
+ 144   1        DelaySMG(TSMG);                //数码管点亮时长
+ 145   1        Set_HC573(6, 0x01 << pos);        
+ 146   1        Set_HC573(7, 0xff);            //消隐
+ 147   1      }
+ 148          //=================全部数码管静态显示=================
+ 149          void DisplaySMG_All(unsigned char value)
+ 150          {
+ 151   1        Set_HC573(6, 0xff);            //使能所有数码管
+ 152   1        Set_HC573(7, value);          //数码管显示内容  
+ 153   1      }
+ 154          //==================实时时间显示函数==================
+ 155          void DisplaySMG_RTC()
+ 156          {
+ 157   1        //秒
+ 158   1        DisplaySMG_Bit(7,SMG_NoDot[sec & 0x0f]);
+ 159   1        DisplaySMG_Bit(6,SMG_NoDot[(sec >> 4) & 0x07]);
+ 160   1        DisplaySMG_Bit(5,SMG_NoDot[16]);
+ 161   1        //分
+ 162   1        DisplaySMG_Bit(4,SMG_NoDot[min & 0x0f]);
+ 163   1        DisplaySMG_Bit(3,SMG_NoDot[min >> 4]);
+ 164   1        DisplaySMG_Bit(2,SMG_NoDot[16]);
+ 165   1        //时
+ 166   1        DisplaySMG_Bit(1,SMG_NoDot[hour & 0x0f]);
+ 167   1        DisplaySMG_Bit(0,SMG_NoDot[hour >> 4]);
+ 168   1      }
+ 169          //=================初始化DS1302的参数=================
+ 170          void Init_DS1302_Param()
+ 171          {
+ 172   1        unsigned char i;
+ 173   1        Write_Ds1302_Byte(0x8E,0x00);  //解除写保护
+ 174   1        for(i = 0; i < 7; i++)        //依次写入7个参数
+ 175   1        {
+ 176   2          Write_Ds1302_Byte(WRITE_RTC_ADDR[i],TIME[i]);
+ 177   2        }
+ 178   1        Write_Ds1302_Byte(0x8E,0x80);  //使能写保护
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 15:28:20 PAGE 4   
+
+ 179   1      }
+ 180          //===============设置DS1302中的时分秒=================
+ 181          void Set_DS1302_Time()
+ 182          {
+ 183   1        Write_Ds1302_Byte(0x8E,0x00);    //解除写保护
+ 184   1        Write_Ds1302_Byte(0x80,sec);    //设置：秒
+ 185   1        Write_Ds1302_Byte(0x82,min);    //设置：分
+ 186   1        Write_Ds1302_Byte(0x84,hour);    //设置：时
+ 187   1        Write_Ds1302_Byte(0x8E,0x80);    //使能写保护
+ 188   1      }
+ 189          //===============读取DS1302中的时分秒=================
+ 190          void Read_DS1302_Time()
+ 191          {
+ 192   1        if(F_pause == 0)              //在非暂停模式中
+ 193   1        {
+ 194   2          sec = Read_Ds1302_Byte(0x81);
+ 195   2          min = Read_Ds1302_Byte(0x83);
+ 196   2          hour = Read_Ds1302_Byte(0x85);
+ 197   2        }  
+ 198   1        DisplaySMG_RTC();              //显示最新的时分秒
+ 199   1      }  
+ 200          //================独立按键扫描处理=================
+ 201          void Scan_Keys()
+ 202          {
+ 203   1        //S4按键：暂停与启动控制
+ 204   1        if(S4 == 0)
+ 205   1        {
+ 206   2          DelaySMG(500);                  //去抖动
+ 207   2          if(S4 == 0)                      //按下S4按键
+ 208   2          {
+ 209   3            if(F_pause == 0)
+ 210   3            {
+ 211   4              F_pause = 1;                //标志暂停模式
+ 212   4            }
+ 213   3            else
+ 214   3            {
+ 215   4              F_pause = 0;                //标志启动模式
+ 216   4              Set_DS1302_Time();          //设置最新时分秒参数
+ 217   4            }
+ 218   3      
+ 219   3            while(S4 == 0)                //松手检测
+ 220   3            {
+ 221   4              Read_DS1302_Time();
+ 222   4            }
+ 223   3          }
+ 224   2        }
+ 225   1        //S5按键：分钟递减
+ 226   1        if(S5 == 0)
+ 227   1        {
+ 228   2          DelaySMG(500);                  //去抖动
+ 229   2          if(S5 == 0)
+ 230   2          {
+ 231   3            if(F_pause == 1)              //在暂停计时的情况下
+ 232   3            {
+ 233   4              min = (min/16)*10 + min%16;  //BCD码转十进制
+ 234   4              if(min == 0)
+ 235   4              {
+ 236   5                min = 59;                  //分钟递减的边界处理
+ 237   5              }
+ 238   4              else
+ 239   4              {
+ 240   5                min = min - 1;            //分钟减1
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 15:28:20 PAGE 5   
+
+ 241   5              }
+ 242   4              min = (min/10)*16 + min%10;  //十进制转BCD码
+ 243   4            }
+ 244   3            while(S5 == 0)                //松手检测
+ 245   3            {
+ 246   4              Read_DS1302_Time();
+ 247   4            }
+ 248   3          }
+ 249   2        }
+ 250   1        //S6按键：分钟递增
+ 251   1        if(S6 == 0)
+ 252   1        {
+ 253   2          DelaySMG(500);                  //去抖动
+ 254   2          if(S6 == 0)
+ 255   2          {
+ 256   3            if(F_pause == 1)              //在暂停计时的情况下
+ 257   3            {
+ 258   4              min = (min/16)*10 + min%16;  //BCD码转十进制
+ 259   4              if(min == 59)
+ 260   4              {
+ 261   5                min = 0;                  //分钟递增的边界处理
+ 262   5              }
+ 263   4              else
+ 264   4              {
+ 265   5                min++;                    //分钟加1
+ 266   5              }
+ 267   4              min = (min/10)*16 + min%10;  //十进制转BCD码
+ 268   4            }
+ 269   3            while(S6 == 0)                //松手检测
+ 270   3            {
+ 271   4              Read_DS1302_Time();
+ 272   4            }
+ 273   3          }  
+ 274   2        }
+ 275   1      }
+ 276          //===================系统初始化===================
+ 277          void Init_sys()
+ 278          {
+ 279   1        Set_HC573(0, 0x00);        //关闭所有锁存器
+ 280   1        Set_HC573(5, 0x00);        //关闭蜂鸣器和继电器
+ 281   1        Set_HC573(4, 0xff);        //关闭全部LED灯
+ 282   1        DisplaySMG_All(0xff);      //关闭全部数码管
+ 283   1        Init_DS1302_Param();      //初始化DS1302
+ 284   1      }
+ 285          //=====================主函数=====================
+ 286          void main()
+ 287          {
+ 288   1        Init_sys();                //系统初始化
+ 289   1        while(1)
+ 290   1        {  
+ 291   2          Read_DS1302_Time();      //更新显示DS1302时分秒
+ 292   2          Scan_Keys();            //循环扫描按键并处理
+ 293   2        }
+ 294   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    574    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11       1
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 15:28:20 PAGE 6   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,176 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 17:51:17 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include "ds1302.h"
+   3          typedef unsigned char u8;
+   4          typedef unsigned int u16;
+   5          sbit S4 = P3^3;
+   6          sbit S5 = P3^2;
+   7          sbit S6 = P3^1;
+   8          u8 code SMG[]= {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0xbf};
+   9          u8 Time[]={0x12,0x12,0x56};
+  10          u8 hour,min,sec;
+  11          bit flag=0;
+  12          void Delay(u16 xms)             //@12.000MHz
+  13          {
+  14   1              while(xms--)
+  15   1              {
+  16   2                      unsigned char i, j;
+  17   2      
+  18   2                      i = 2;
+  19   2                      j = 239;
+  20   2                      do
+  21   2                      {
+  22   3                              while (--j);
+  23   3                      } while (--i);
+  24   2              }
+  25   1      }
+  26          
+  27          void InitHC138(u8 n)
+  28          {
+  29   1              switch(n)
+  30   1              {
+  31   2                      case 0 : P2=(P2&0x1F)|0x00; break;
+  32   2                      case 4 : P2=(P2&0x1F)|0x80; break;
+  33   2                      case 5 : P2=(P2&0x1F)|0xA0; break;
+  34   2                      case 6 : P2=(P2&0x1F)|0xC0; break;
+  35   2                      case 7 : P2=(P2&0x1F)|0xE0; break;
+  36   2                      
+  37   2              }
+  38   1      }
+  39          
+  40          void ShowSMG(u8 value,u8 pos)
+  41          {
+  42   1              InitHC138(6);
+  43   1              P0=0x01<<pos;
+  44   1              InitHC138(7);
+  45   1              P0=value;
+  46   1              Delay(2);
+  47   1              P0=0xFF;
+  48   1      }
+  49          
+  50          void DisplayTime()
+  51          {
+  52   1              Read_Rtc(Time);
+  53   1              ShowSMG(SMG[Time[0]/16],0);
+  54   1              ShowSMG(SMG[Time[0]%16],1);
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 17:51:17 PAGE 2   
+
+  55   1              ShowSMG(SMG[10],2);
+  56   1              ShowSMG(SMG[Time[1]/16],3);
+  57   1              ShowSMG(SMG[Time[1]%16],4);
+  58   1              ShowSMG(SMG[10],5);
+  59   1              ShowSMG(SMG[Time[2]/16],6);
+  60   1              ShowSMG(SMG[Time[2]%16],7);
+  61   1              
+  62   1      }
+  63          void Pause_Time()
+  64          {
+  65   1              if(flag==0)
+  66   1              {
+  67   2                      Read_Rtc(Time);
+  68   2                      DisplayTime();
+  69   2              }
+  70   1              else
+  71   1              {
+  72   2                      Set_Rtc(Time);
+  73   2                      DisplayTime();
+  74   2              }
+  75   1      }
+  76          void ScanKey()
+  77          {
+  78   1              if(S4==0)
+  79   1              {
+  80   2                      Delay(10);
+  81   2                      if(S4==0)
+  82   2                      {
+  83   3                              while(S4==0)
+  84   3                              {
+  85   4                                      DisplayTime();
+  86   4                              }
+  87   3                              flag=~flag;
+  88   3                      }
+  89   2              }
+  90   1              if(S5==0)
+  91   1              {
+  92   2                      Delay(10);
+  93   2                      if(S5==0)
+  94   2                      {
+  95   3                              if(flag==1)
+  96   3                              {
+  97   4                                      u8 temp = Time[1];
+  98   4                                      temp = (temp/16)*10+temp%16;
+  99   4                                      if(temp==0)
+ 100   4                                              temp=59;
+ 101   4                                      else
+ 102   4                                              temp--;
+ 103   4                                      Time[1]=(temp/10)*16+temp%10;//10->BCD
+ 104   4                                      Set_Rtc(Time);
+ 105   4                              }
+ 106   3                              while(S5==0)
+ 107   3                              {
+ 108   4                                      DisplayTime();
+ 109   4                              }
+ 110   3                              
+ 111   3                      }
+ 112   2              }
+ 113   1              if(S6==0)
+ 114   1              {
+ 115   2                      Delay(10);
+ 116   2                      if(S6==0)
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 17:51:17 PAGE 3   
+
+ 117   2                      {
+ 118   3                              if(flag==1)
+ 119   3                              {
+ 120   4                                      u8 temp = Time[1];
+ 121   4                                      temp = (temp/16)*10+temp%16;
+ 122   4                                      if(temp==59)
+ 123   4                                              temp=0;
+ 124   4                                      else
+ 125   4                                              temp++;
+ 126   4                                      Time[1]=(temp/10)*16+temp%10;//10->BCD
+ 127   4                                      Set_Rtc(Time);
+ 128   4                              }
+ 129   3                              while(S6==0)
+ 130   3                              {
+ 131   4                                      DisplayTime();
+ 132   4                              }
+ 133   3      
+ 134   3                      }
+ 135   2              }
+ 136   1      }
+ 137          void main()
+ 138          {
+ 139   1              InitHC138(4);
+ 140   1              P0=0xFF;
+ 141   1              InitHC138(0);
+ 142   1              Set_Rtc(Time);
+ 143   1              while(1)
+ 144   1              {
+ 145   2                      Pause_Time();
+ 146   2                      ScanKey();
+ 147   2              }
+ 148   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    450    ----
+   CONSTANT SIZE    =     11    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
