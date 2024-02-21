@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2024 11:10:36 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/22/2024 00:33:07 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -9,26 +9,154 @@ COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DE
 line level    source
 
    1          #include <STC15F2K60S2.H>
-   2          
-   3          typedef unsigned char u8;
-   4          typedef unsigned int u16;
-   5          
-   6           
-   7          void main()
-   8          {
-   9   1              while(1)
-  10   1              {
-  11   2              
-  12   2              }
-  13   1      }
+   2          #include "onewire.h"
+   3          #include <INTRINS.H>
+   4          typedef unsigned char u8;
+   5          typedef unsigned int u16;
+   6          sbit S4 = P3^3;
+   7          u8 code SMG[]= {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0xbf};
+   8          unsigned char code SMG_Dot[10]={0x40,0x79,
+   9              0x24,0x30,0x19,0x12,0x02,0x78,0x00,0x10};
+  10          u8 MODE=0;
+  11          float t=0;
+  12          u16 temp=0;
+  13          void InitHC138(u8 n)
+  14          {
+  15   1              switch(n)
+  16   1              {
+  17   2                      case 0 : P2=(P2&0x1F)|0x00; break;
+  18   2                      case 4 : P2=(P2&0x1F)|0x80; break;
+  19   2                      case 5 : P2=(P2&0x1F)|0xA0; break;
+  20   2                      case 6 : P2=(P2&0x1F)|0xC0; break;
+  21   2                      case 7 : P2=(P2&0x1F)|0xE0; break;
+  22   2              }
+  23   1      }
+  24          void Delay(u16 xms)             //@12.000MHz
+  25          {
+  26   1              while(xms--)
+  27   1              {
+  28   2                      unsigned char i, j;
+  29   2      
+  30   2                      i = 12;
+  31   2                      j = 169;
+  32   2                      do
+  33   2                      {
+  34   3                              while (--j);
+  35   3                      } while (--i);
+  36   2      
+  37   2              }
+  38   1      }
+  39          
+  40          void ShowSMG(u8 value,u8 pos)
+  41          {
+  42   1              InitHC138(6);
+  43   1              P0=0x01<<pos;
+  44   1              InitHC138(7);
+  45   1              P0=value;
+  46   1              Delay(2);
+  47   1              P0=0xFF;
+  48   1      }
+  49          void DisplayT()
+  50          {
+  51   1              
+  52   1              switch(MODE)
+  53   1              {
+  54   2                      case 0 :
+C51 COMPILER V9.60.7.0   MAIN                                                              02/22/2024 00:33:07 PAGE 2   
+
+  55   2                              temp=t*100;
+  56   2                              if(temp/1000!=0)
+  57   2                                      ShowSMG(SMG[temp/1000],4);
+  58   2                              ShowSMG(SMG_Dot[(temp/100)%10],5);
+  59   2                              ShowSMG(SMG[(temp/10)%10],6);
+  60   2                              ShowSMG(SMG[temp%10],7);
+  61   2                              break;
+  62   2                      case 1 :
+  63   2                              temp=t*10;
+  64   2                              if(temp/100!=0)
+  65   2                                      ShowSMG(SMG[temp/100],5);
+  66   2                              ShowSMG(SMG_Dot[(temp/10)%10],6);
+  67   2                              ShowSMG(SMG[temp%10],7);
+  68   2                              break;
+  69   2                      case 2 :
+  70   2                              temp=t;
+  71   2                              if(temp/10!=0)
+  72   2                                      ShowSMG(SMG[temp/10],6);
+  73   2                              ShowSMG(SMG[temp%10],7);
+  74   2                              break;
+  75   2                      
+  76   2              }
+  77   1      }
+  78          float rd_tempertature(void)
+  79          {
+  80   1              unsigned char low=0,high=0;
+  81   1              unsigned int temp=0;
+  82   1              //float T;
+  83   1              init_ds18b20();
+  84   1              DisplayT();
+  85   1              Write_DS18B20(0xCC); // 跳过ROM
+  86   1              Write_DS18B20(0x44); // 温度转换
+  87   1              DisplayT();
+  88   1              init_ds18b20();
+  89   1              DisplayT();
+  90   1              Write_DS18B20(0xCC); // 跳过ROM
+  91   1              Write_DS18B20(0xBE); // 获取温度
+  92   1              DisplayT();
+  93   1              low = Read_DS18B20();
+  94   1              high = Read_DS18B20();
+  95   1              DisplayT();
+  96   1              temp=high;
+  97   1              temp=(temp<<8)|low;
+  98   1              DisplayT();
+  99   1              return temp*0.0625;
+ 100   1      }
+ 101          
+ 102          
+ 103          
+ 104          void ScanKey()
+ 105          {
+ 106   1              if(S4==0)
+ 107   1              {
+ 108   2                      Delay(20);
+ 109   2                      if(S4==0)
+ 110   2                      {
+ 111   3                              while(S4==0)
+ 112   3                              {
+ 113   4                                      DisplayT();
+ 114   4                              }
+ 115   3                              MODE++;
+ 116   3                              if(MODE>2)
+C51 COMPILER V9.60.7.0   MAIN                                                              02/22/2024 00:33:07 PAGE 3   
+
+ 117   3                                      MODE=0;
+ 118   3                      }
+ 119   2                      
+ 120   2              }
+ 121   1      }
+ 122          
+ 123          void main()
+ 124          {
+ 125   1              rd_tempertature();
+ 126   1              InitHC138(4);
+ 127   1              P0=0xFF;
+ 128   1              InitHC138(0);
+ 129   1              //Delay(750);
+ 130   1              while(1)
+ 131   1              {
+ 132   2                      t=rd_tempertature();
+ 133   2                      ScanKey();
+ 134   2                      
+ 135   2              }
+ 136   1              
+ 137   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =      2    ----
-   CONSTANT SIZE    =   ----    ----
+   CODE SIZE        =    578    ----
+   CONSTANT SIZE    =     21    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
+   DATA SIZE        =      7       6
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

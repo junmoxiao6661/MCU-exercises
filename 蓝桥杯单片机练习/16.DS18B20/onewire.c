@@ -1,32 +1,18 @@
 /*
   程序说明: 单总线驱动程序
   软件环境: Keil uVision 4.10 
-  硬件环境: CT107单片机综合实训平台
+  硬件环境: CT107单片机综合实训平台(外部晶振12MHz) STC89C52RC单片机
   日    期: 2011-8-9
 */
-
+#include "reg52.h"
 #include "onewire.h"
+sbit DQ = P1^4;  //单总线接口
 
 //单总线延时函数
-void Delay_OneWire(unsigned int t)
+void Delay_OneWire(unsigned int t)  //STC89C52RC
 {
-  while(t--);
-}
-
-//DS18B20芯片初始化
-bit Init_DS18B20(void)
-{
-	bit initflag = 0;
-	DQ = 1;
-	Delay_OneWire(12);
-	DQ = 0;
-	Delay_OneWire(80); 
-	DQ = 1;
-	Delay_OneWire(10); 
-	initflag = DQ;    
-	Delay_OneWire(5);
-  
-	return initflag;
+	t*=12;// 12T
+	while(t--);
 }
 
 //通过单总线向DS18B20写一个字节
@@ -63,3 +49,33 @@ unsigned char Read_DS18B20(void)
 	}
 	return dat;
 }
+
+//DS18B20设备初始化
+bit init_ds18b20(void)
+{
+  	bit initflag = 0;
+  	
+  	DQ = 1;
+  	Delay_OneWire(12);
+  	DQ = 0;
+  	Delay_OneWire(80);
+  	DQ = 1;
+  	Delay_OneWire(10); 
+    initflag = DQ;     
+  	Delay_OneWire(5);
+  
+  	return initflag;
+}
+void DS18B20_Init()
+{
+	init_ds18b20();
+	Write_DS18B20(0xCC); // 璺宠繃ROM
+	Write_DS18B20(0x44); // 娓╁害杞崲
+}
+
+
+
+
+
+
+
