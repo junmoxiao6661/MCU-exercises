@@ -100,12 +100,16 @@ float rd_tempertature(void)
 }
 
 
-
+void DelaySMG(u16 t)
+{
+	while(t--);
+}
+	
 void ScanKey()
 {
 	if(S4==0)
 	{
-		Delay(20);
+		DelaySMG(100);
 		if(S4==0)
 		{
 			while(S4==0)
@@ -113,6 +117,7 @@ void ScanKey()
 				DisplayT();
 			}
 			MODE++;
+			//DisplayT();
 			if(MODE>2)
 				MODE=0;
 		}
