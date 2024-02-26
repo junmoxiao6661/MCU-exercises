@@ -121,3 +121,19 @@ unsigned char Ad_Read(unsigned char addr)
 	IIC_Stop();
 	return temp;
 }
+
+void EEPROM_Write(unsigned char* EEPROM_S,unsigned char addr,unsigned char num)
+{
+	IIC_Start();
+	IIC_SendByte(0xA0);
+	IIC_WaitAck();
+	IIC_SendByte(addr);
+	IIC_WaitAck();
+	while(num--)
+	{
+		IIC_SendByte(*EEPROM_S++);
+		IIC_WaitAck();
+		IIC_Delay(200);
+	}
+	IIC_Stop();
+}

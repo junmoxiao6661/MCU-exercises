@@ -54,10 +54,10 @@ void Key_Pro()
 	{
 		case 4 :
 			if(++mode==3) mode=0;
-			if(mode==1) temp_d=temp_c;
-			if(mode==2) temp_c=temp_d;
+			//if(mode==1) temp_d=temp_c;
+			//if(mode==2) temp_c=temp_d;
 			break;
-		case 8 :
+		/*case 8 :
 			if(mode==1)
 			{
 				if(--temp_d==255)
@@ -73,7 +73,7 @@ void Key_Pro()
 			break;
 		case 5 :
 			outv_mode=~outv_mode;
-			break;
+			break;*/
 		
 	}
 }

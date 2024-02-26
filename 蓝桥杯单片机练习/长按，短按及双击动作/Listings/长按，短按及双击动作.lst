@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ____________________                                              02/26/2024 15:55:53 PAGE 1   
+C51 COMPILER V9.60.7.0   ____________________                                              02/26/2024 23:44:24 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ____________________
@@ -39,13 +39,13 @@ line level    source
   29   1      
   30   1                      /*按键驱动中*/
   31   1              if(Key_Down==4){
-  32   2                      //if(Key_Cnt_Flag){     //先进行判断双击动作
-  33   2                              //led[2]^=1;//执行双击动作
-  34   2                              //Key_Cnt_Flag = 0;     //复位
-  35   2                      //}
-  36   2                      //else{
-  37   2                              Key_Cnt_Flag = 1;       //开始计时
-  38   2                      //}
+  32   2                      if(Key_Cnt_Flag){       //先进行判断双击动作
+  33   3                              led[2]^=1;//执行双击动作
+  34   3                              Key_Cnt_Flag = 0;       //复位
+  35   3                      }
+  36   2                      else{
+  37   3                              Key_Cnt_Flag = 1;       //开始计时
+  38   3                      }
   39   2              }
   40   1      
   41   1      }
@@ -62,7 +62,7 @@ line level    source
   52   1              ET0=1;
   53   1      }
   54          
-C51 COMPILER V9.60.7.0   ____________________                                              02/26/2024 15:55:53 PAGE 2   
+C51 COMPILER V9.60.7.0   ____________________                                              02/26/2024 23:44:24 PAGE 2   
 
   55          /* 定时器0中断服务函数 */
   56          void Timer0Server() interrupt 1
@@ -79,12 +79,12 @@ line level    source
   67   1              if(Key_Cnt_Flag){                               //长按计时部分
   68   2                      if(++Key_Cnt_Flag==1000){       //以认为500毫秒为长按
   69   3                              Key_Cnt_Flag = 0;
-  70   3                              //if(Key_Val){  //没松手
-  71   3                                      led[0]^=1;//执行长按动作
-  72   3                              //}
-  73   3                              //else{
-  74   3                                      //led[1]^=1;//执行短按动作
-  75   3                              //}
+  70   3                              if(Key_Val){    //没松手
+  71   4                                      led[0]^=1;//执行长按动作
+  72   4                              }
+  73   3                              else{
+  74   4                                      led[1]^=1;//执行短按动作
+  75   4                              }
   76   3                      }
   77   2              }
   78   1      
@@ -102,7 +102,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    204    ----
+   CODE SIZE        =    228    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

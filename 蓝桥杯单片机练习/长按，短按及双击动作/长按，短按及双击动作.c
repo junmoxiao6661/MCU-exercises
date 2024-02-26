@@ -29,13 +29,13 @@ void Key_Proc()
 
 		/*按键驱动中*/
 	if(Key_Down==4){
-		//if(Key_Cnt_Flag){	//先进行判断双击动作
-			//led[2]^=1;//执行双击动作
-			//Key_Cnt_Flag = 0;	//复位
-		//}
-		//else{
+		if(Key_Cnt_Flag){	//先进行判断双击动作
+			led[2]^=1;//执行双击动作
+			Key_Cnt_Flag = 0;	//复位
+		}
+		else{
 			Key_Cnt_Flag = 1;	//开始计时
-		//}
+		}
 	}
 
 }
@@ -67,12 +67,12 @@ void Timer0Server() interrupt 1
 	if(Key_Cnt_Flag){				//长按计时部分
 		if(++Key_Cnt_Flag==1000){	//以认为500毫秒为长按
 			Key_Cnt_Flag = 0;
-			//if(Key_Val){	//没松手
+			if(Key_Val){	//没松手
 				led[0]^=1;//执行长按动作
-			//}
-			//else{
-				//led[1]^=1;//执行短按动作
-			//}
+			}
+			else{
+				led[1]^=1;//执行短按动作
+			}
 		}
 	}
 

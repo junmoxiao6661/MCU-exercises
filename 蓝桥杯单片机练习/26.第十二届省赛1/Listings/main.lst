@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 20:01:53 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -62,30 +62,30 @@ line level    source
   52   1              
   53   1              switch(key_d)
   54   1              {
-C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 2   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 20:01:53 PAGE 2   
 
   55   2                      case 4 :
   56   2                              if(++mode==3) mode=0;
-  57   2                              if(mode==1) temp_d=temp_c;
-  58   2                              if(mode==2) temp_c=temp_d;
+  57   2                              //if(mode==1) temp_d=temp_c;
+  58   2                              //if(mode==2) temp_c=temp_d;
   59   2                              break;
-  60   2                      case 8 :
+  60   2                      /*case 8 :
   61   2                              if(mode==1)
   62   2                              {
-  63   3                                      if(--temp_d==255)
-  64   3                                              temp_d=0;
-  65   3                              }
+  63   2                                      if(--temp_d==255)
+  64   2                                              temp_d=0;
+  65   2                              }
   66   2                              break;
   67   2                      case 9:
   68   2                              if(mode==1)
   69   2                              {
-  70   3                                      if(++temp_d==100)
-  71   3                                              temp_d=99;
-  72   3                              }
+  70   2                                      if(++temp_d==100)
+  71   2                                              temp_d=99;
+  72   2                              }
   73   2                              break;
   74   2                      case 5 :
   75   2                              outv_mode=~outv_mode;
-  76   2                              break;
+  76   2                              break;*/
   77   2                      
   78   2              }
   79   1      }
@@ -126,7 +126,7 @@ line level    source
  114   2                              seg_buf[7]=(u16)(T*100)%10;
  115   2                              pot[5]=1;
  116   2                              break;
-C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 3   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 20:01:53 PAGE 3   
 
  117   2                      case 1 :
  118   2                              seg_buf[0]=18;
@@ -190,7 +190,7 @@ line level    source
  176   1              Delay750ms();
  177   1              Timer0_Init();
  178   1              while(1)
-C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 4   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 20:01:53 PAGE 4   
 
  179   1              {
  180   2                      Key_Pro();
@@ -201,7 +201,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    802    ----
+   CODE SIZE        =    738    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
