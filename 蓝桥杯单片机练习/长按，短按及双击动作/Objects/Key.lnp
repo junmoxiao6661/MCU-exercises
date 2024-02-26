@@ -1,0 +1,5 @@
+".\Objects\长按，短按及双击动作.obj",
+".\Objects\Key.obj",
+".\Objects\Led.obj" 
+TO ".\Objects\Key" 
+PRINT(".\Listings\Key.m51") RAMSIZE(256) 

@@ -1,0 +1,186 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 19:46:25 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include "Key.h"
+   3          #include "Seg.h"
+   4          #include "Led.h"
+   5          #include "iic.h"
+   6          
+   7          typedef unsigned char u8;
+   8          typedef unsigned int u16;
+   9          
+  10          u8 kval,kold,kup,kdown;
+  11          u8 kslow;
+  12          u8 segslow;
+  13          u8 segbuf[8]={10,10,10,10,10,10,10,10};
+  14          u8 pot[8]={0,0,0,0,0,0,0,0};
+  15          u8 pos=0;
+  16          u8 led[8]={0,0,0,0,0,0,0,0};
+  17          u16 fre=0,fre_delay=0;
+  18          u8 mode=0;
+  19          u8 r1,r2;
+  20          bit vmode=0;
+  21          float T=0.0;
+  22          float tempr;
+  23          u16 tempT;
+  24          void Key_Pro()
+  25          {
+  26   1              if(kslow) return;
+  27   1              kslow=1;
+  28   1              kval=Key_Read();
+  29   1              kdown=kval&(kold^kval);
+  30   1              kup=~kval&(kold^kval);
+  31   1              kold=kval;
+  32   1              if(kdown==4)
+  33   1              {
+  34   2                      if(++mode>=3) mode=0;
+  35   2              }
+  36   1              
+  37   1      }
+  38          void ShowNum(u16 n)
+  39          {
+  40   1              u8 i;
+  41   1              for(i=7;i>=1;i--)
+  42   1              {
+  43   2                      if(n!=0)
+  44   2                      {
+  45   3                              segbuf[i]=n%10;
+  46   3                      }
+  47   2                      else
+  48   2                      {
+  49   3                              segbuf[i]=10;
+  50   3                      }
+  51   2                      n/=10;
+  52   2              }
+  53   1      }
+  54          
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 19:46:25 PAGE 2   
+
+  55          u8 AD()
+  56          {
+  57   1              if(vmode==0)
+  58   1                      return Ad_Read(0x41);
+  59   1              else
+  60   1                      return Ad_Read(0x43);
+  61   1      }
+  62          void Seg_Pro()
+  63          {
+  64   1              if(segslow) return;
+  65   1              segslow=1;
+  66   1              r1=AD();
+  67   1              T=1.0/fre;
+  68   1              tempT=T*1000000;
+  69   1              tempr=r1/51.0;
+  70   1              switch(mode)
+  71   1              {
+  72   2                      case 0 :
+  73   2                              segbuf[0]=12;
+  74   2                              pot[5]=0;
+  75   2                              ShowNum(fre);
+  76   2                              break;
+  77   2                      case 1 :
+  78   2                              segbuf[0]=13;
+  79   2                              pot[5]=0;
+  80   2                              ShowNum(tempT);
+  81   2                              break;
+  82   2                      case 2 :
+  83   2                              segbuf[0]=14;
+  84   2                              segbuf[1]=11;
+  85   2                              segbuf[2]=(vmode==0?1:3);
+  86   2                              segbuf[3]=10;
+  87   2                              segbuf[4]=10;
+  88   2                              segbuf[5]=(u8)tempr%10;
+  89   2                              segbuf[6]=(u8)(tempr*10)%10;
+  90   2                              segbuf[7]=(u16)(tempr*100)%10;
+  91   2                              pot[5]=1;
+  92   2                              break;
+  93   2              }
+  94   1              
+  95   1      }
+  96          void Timer0_Init(void)          //1毫秒@12.000MHz
+  97          {
+  98   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+  99   1              TMOD &= 0xF0;                   //设置定时器模式
+ 100   1              TMOD|=0x05;//0101
+ 101   1              TL0 = 0;                                //设置定时初始值
+ 102   1              TH0 = 0;                                //设置定时初始值
+ 103   1              TF0 = 0;                                //清除TF0标志
+ 104   1              TR0 = 1;                                //定时器0开始计时
+ 105   1      }
+ 106          
+ 107          void Timer1_Init(void)          //1毫秒@12.000MHz
+ 108          {
+ 109   1              AUXR &= 0xBF;                   //定时器时钟12T模式
+ 110   1              TMOD &= 0x0F;                   //设置定时器模式
+ 111   1              TL1 = 0x18;                             //设置定时初始值
+ 112   1              TH1 = 0xFC;                             //设置定时初始值
+ 113   1              TF1 = 0;                                //清除TF1标志
+ 114   1              TR1 = 1;                                //定时器1开始计时
+ 115   1              ET1 = 1;                                //使能定时器1中断
+ 116   1              EA=1;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 19:46:25 PAGE 3   
+
+ 117   1      }
+ 118          void TimerService() interrupt 3
+ 119          {
+ 120   1              u16 temp=0;
+ 121   1              if(++kslow==20) kslow=0;
+ 122   1              if(++segslow==500) segslow=0;
+ 123   1              if(++pos==8) pos=0;
+ 124   1              Seg_Display(pos,segbuf[pos],pot[pos]);
+ 125   1              Led_Display(pos,led[pos]);
+ 126   1              if(++fre_delay==1000)
+ 127   1              {
+ 128   2                      TR0=0;
+ 129   2                      fre_delay=0;
+ 130   2                      temp=TH0;
+ 131   2                      fre=(temp<<8)|TL0;
+ 132   2                      TH0=TL0=0;
+ 133   2                      TR0=1;
+ 134   2              }
+ 135   1      }
+ 136          
+ 137          void sys_init()
+ 138          {
+ 139   1              P0=0xff;
+ 140   1              P2=P2&0x1f|0x80;
+ 141   1              P2&=0x1f;
+ 142   1              
+ 143   1              P0=0x00;
+ 144   1              P2=P2&0x1f|0xa0;
+ 145   1              P2&=0x1f;
+ 146   1      }
+ 147          void main()
+ 148          {
+ 149   1              sys_init();
+ 150   1              Timer1_Init();
+ 151   1              Timer0_Init();
+ 152   1              while(1)
+ 153   1              {
+ 154   2                      Key_Pro();
+ 155   2                      Seg_Pro();
+ 156   2              }
+ 157   1              
+ 158   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    629    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     48       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

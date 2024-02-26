@@ -1,0 +1,115 @@
+C51 COMPILER V9.60.7.0   ____________________                                              02/26/2024 15:55:53 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ____________________
+OBJECT MODULE PLACED IN .\Objects\�������̰���˫������.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE �������̰���˫������.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.
+                    -\Listings\�������̰���˫������.lst) OBJECT(.\Objects\�������̰���˫������.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <Key.h>
+   3          #include <Led.h>
+   4          
+   5          unsigned char led[8]={0,0,0,0,0,0,0,0};//led状态存储
+   6          unsigned char Seg_Pos,Key_Val,Key_Down,Key_Up,Key_Old,slow_down;
+   7          bit key_flag;
+   8                  
+   9          /*定义变量*/
+  10          unsigned int Key_Cnt_Flag = 0; //0——停止计时
+  11          
+  12          
+  13          
+  14          
+  15          
+  16          
+  17          /* 键盘处理函数 */
+  18          void Key_Proc()
+  19          {
+  20   1              if(key_flag) return;
+  21   1              key_flag = 1;//键盘减速程序
+  22   1      
+  23   1              Key_Val = Key_Read();//实时读取键码值
+  24   1              Key_Down = Key_Val & (Key_Old ^ Key_Val);//捕捉按键下降沿
+  25   1              Key_Up = ~Key_Val & (Key_Old ^ Key_Val);//捕捉按键上降沿
+  26   1              Key_Old = Key_Val;//辅助扫描变量
+  27   1              
+  28   1              
+  29   1      
+  30   1                      /*按键驱动中*/
+  31   1              if(Key_Down==4){
+  32   2                      //if(Key_Cnt_Flag){     //先进行判断双击动作
+  33   2                              //led[2]^=1;//执行双击动作
+  34   2                              //Key_Cnt_Flag = 0;     //复位
+  35   2                      //}
+  36   2                      //else{
+  37   2                              Key_Cnt_Flag = 1;       //开始计时
+  38   2                      //}
+  39   2              }
+  40   1      
+  41   1      }
+  42          
+  43          void Timer0_Init(void)          //1毫秒@12.000MHz
+  44          {
+  45   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+  46   1              TMOD &= 0xF0;                   //设置定时器模式
+  47   1              TL0 = 0x18;                             //设置定时初始值
+  48   1              TH0 = 0xFC;                             //设置定时初始值
+  49   1              TF0 = 0;                                //清除TF0标志
+  50   1              TR0 = 1;                                //定时器0开始计时
+  51   1              EA=1;
+  52   1              ET0=1;
+  53   1      }
+  54          
+C51 COMPILER V9.60.7.0   ____________________                                              02/26/2024 15:55:53 PAGE 2   
+
+  55          /* 定时器0中断服务函数 */
+  56          void Timer0Server() interrupt 1
+  57          {  
+  58   1              slow_down++;slow_down%=200;
+  59   1              if(slow_down%10==0) key_flag=0;
+  60   1              
+  61   1              if(++Seg_Pos == 8) Seg_Pos = 0;//数码管显示专用
+  62   1              Led_Disp(Seg_Pos,led[Seg_Pos]);
+  63   1              
+  64   1              
+  65   1              /*1ms定时器中*/
+  66   1      
+  67   1              if(Key_Cnt_Flag){                               //长按计时部分
+  68   2                      if(++Key_Cnt_Flag==1000){       //以认为500毫秒为长按
+  69   3                              Key_Cnt_Flag = 0;
+  70   3                              //if(Key_Val){  //没松手
+  71   3                                      led[0]^=1;//执行长按动作
+  72   3                              //}
+  73   3                              //else{
+  74   3                                      //led[1]^=1;//执行短按动作
+  75   3                              //}
+  76   3                      }
+  77   2              }
+  78   1      
+  79   1      }
+  80          
+  81          
+  82          void main()
+  83          {
+  84   1              Timer0_Init();
+  85   1              while(1)
+  86   1              {
+  87   2                      Key_Proc();
+  88   2              }
+  89   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    204    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     16    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

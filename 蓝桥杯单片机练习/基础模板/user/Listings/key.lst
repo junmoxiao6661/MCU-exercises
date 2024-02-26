@@ -1,0 +1,63 @@
+C51 COMPILER V9.60.7.0   KEY                                                               02/26/2024 10:41:55 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE KEY
+OBJECT MODULE PLACED IN .\Objects\key.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE ..\driver\key.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\driver) DEBUG OBJECTEXT
+                    -END PRINT(.\Listings\key.lst) OBJECT(.\Objects\key.obj)
+
+line level    source
+
+   1          #include "key.h"
+   2          #include <STC15F2K60S2.H>
+   3          unsigned char key_read()
+   4          {
+   5   1              unsigned char temp=0;
+   6   1              P44=0;P42=1;P35=1;P34=1;
+   7   1              if(P33==0)temp=4;
+   8   1              if(P32==0)temp=5;
+   9   1              if(P31==0)temp=6;
+  10   1              if(P30==0)temp=7;
+  11   1              
+  12   1              P44=1;P42=0;P35=1;P34=1;
+  13   1              if(P33==0)temp=8;
+  14   1              if(P32==0)temp=9;
+  15   1              if(P31==0)temp=10;
+  16   1              if(P30==0)temp=11;
+  17   1              
+  18   1              P44=1;P42=1;P35=0;P34=1;
+  19   1              if(P33==0)temp=12;
+  20   1              if(P32==0)temp=13;
+  21   1              if(P31==0)temp=14;
+  22   1              if(P30==0)temp=15;
+  23   1              
+  24   1              P44=1;P42=1;P35=1;P34=0;
+  25   1              if(P33==0)temp=16;
+  26   1              if(P32==0)temp=17;
+  27   1              if(P31==0)temp=18;
+  28   1              if(P30==0)temp=19;
+  29   1              return temp;
+  30   1      }
+  31          //unsigned char key_read()
+  32          //{
+  33          //      unsigned char temp=0;
+  34          //      if(P33==0)temp=4;
+  35          //      if(P32==0)temp=5;
+  36          //      if(P31==0)temp=6;
+  37          //      if(P30==0)temp=7;
+  38          //      return temp;
+  39          //}
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    115    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

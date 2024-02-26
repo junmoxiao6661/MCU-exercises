@@ -1,0 +1,118 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/25/2024 21:05:49 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          
+   3          typedef unsigned char u8;
+   4          typedef unsigned int u16;
+   5          u16 count=0,sec=0,fre=0;
+   6          u8 code SMG[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0xbf};
+   7          void Delay(u16 xms)             //@12.000MHz
+   8          {
+   9   1              while(xms--)
+  10   1              {
+  11   2                      unsigned char i, j;
+  12   2      
+  13   2                      i = 12;
+  14   2                      j = 169;
+  15   2                      do
+  16   2                      {
+  17   3                              while (--j);
+  18   3                      } while (--i);
+  19   2              }
+  20   1      }
+  21          
+  22          void InitHC138(u8 n)
+  23          {
+  24   1              switch(n)
+  25   1              {
+  26   2                      case 0 : P2=(P2&0x1F)|0x00; break;
+  27   2                      case 4 : P2=(P2&0x1F)|0x80; break;
+  28   2                      case 5 : P2=(P2&0x1F)|0xA0; break;
+  29   2                      case 6 : P2=(P2&0x1F)|0xC0; break;
+  30   2                      case 7 : P2=(P2&0x1F)|0xE0; break;
+  31   2              }
+  32   1      }
+  33          
+  34          void ShowSMG(u8 val,u8 pos)
+  35          {
+  36   1              InitHC138(6);
+  37   1              P0=0x01<<pos;
+  38   1              InitHC138(7);
+  39   1              P0=val;
+  40   1              Delay(2);
+  41   1              P0=0xFF;
+  42   1      }
+  43          void Timer_Init(void)
+  44          {
+  45   1              TMOD = 0x16; //0001 0110
+  46   1              ET0=1;
+  47   1              ET1=1;
+  48   1              EA=1;
+  49   1              TH0=0xFF;
+  50   1              TL0=0xFF;
+  51   1              TL1=0x18;
+  52   1              TH1=0xFC;
+  53   1              TR0=1;
+  54   1              TR1=1;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/25/2024 21:05:49 PAGE 2   
+
+  55   1      }
+  56          void Timer0_Service() interrupt 1
+  57          {
+  58   1              count++;
+  59   1      }
+  60          
+  61          void Timer1_Service() interrupt 3
+  62          {
+  63   1              TL1=0x18;
+  64   1              TH1=0xFC;
+  65   1              sec++;
+  66   1              if(sec>=1000)
+  67   1              {
+  68   2                      fre=count;
+  69   2                      count=0;
+  70   2                      sec=0;
+  71   2              }
+  72   1      }
+  73          void DisplayF()
+  74          {
+  75   1              u8 i;
+  76   1              u16 temp=fre;
+  77   1              for(i=5;i>=1;i--)
+  78   1              {
+  79   2                      ShowSMG(SMG[temp%10],i+2);
+  80   2                      temp/=10;
+  81   2              }
+  82   1      }
+  83          void main()
+  84          {
+  85   1              InitHC138(4);
+  86   1              P0=0xFF;
+  87   1              Timer_Init();
+  88   1              while(1)
+  89   1              {
+  90   2                      DisplayF();
+  91   2              }
+  92   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    285    ----
+   CONSTANT SIZE    =     11    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,64 @@
+C51 COMPILER V9.60.7.0   SEG                                                               02/26/2024 10:41:55 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SEG
+OBJECT MODULE PLACED IN .\Objects\seg.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE ..\driver\seg.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\driver) DEBUG OBJECTEXT
+                    -END PRINT(.\Listings\seg.lst) OBJECT(.\Objects\seg.obj)
+
+line level    source
+
+   1          #include "seg.h"
+   2          #include <STC15F2K60S2.H>
+   3          code unsigned char segment[]={0xc0, //0
+   4          0xf9, //1
+   5          0xa4, //2
+   6          0xb0, //3
+   7          0x99, //4
+   8          0x92, //5
+   9          0x82, //6
+  10          0xf8, //7
+  11          0x80, //8
+  12          0x90, //9
+  13          0xff,//≤ªœ‘ æ
+  14          0xbf,   
+  15          0x88, //A
+  16          0x83, //b
+  17          0xc6, //C
+  18          0xa1, //d
+  19          0x86, //E
+  20          0x8e //F
+  21          };
+  22          code unsigned char wei[]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
+  23          void seg_dis(unsigned char i,j,k)
+  24          {
+  25   1              P0=0xff;
+  26   1              P2=P2&0x1f|0xe0;
+  27   1              P2&=0x1f;
+  28   1              
+  29   1              P0=wei[i];
+  30   1              P2=P2&0x1f|0xc0;
+  31   1              P2&=0x1f;
+  32   1              
+  33   1              P0=segment[j];
+  34   1              if(k)
+  35   1                      P0 &=0x7f;
+  36   1              
+  37   1              P2=P2&0x1f|0xe0;
+  38   1              P2&=0x1f;
+  39   1              
+  40   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     65    ----
+   CONSTANT SIZE    =     26    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

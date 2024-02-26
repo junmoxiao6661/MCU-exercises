@@ -1,0 +1,1 @@
+"..\driver\ii.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\driver) DEBUG OBJECTEXTEND PRINT(.\Listings\ii.lst) TABS (2) OBJECT(.\Objects\ii.obj)

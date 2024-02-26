@@ -1,0 +1,78 @@
+C51 COMPILER V9.60.7.0   LED                                                               02/26/2024 10:41:55 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN .\Objects\led.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE ..\driver\led.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\driver) DEBUG OBJECTEXT
+                    -END PRINT(.\Listings\led.lst) OBJECT(.\Objects\led.obj)
+
+line level    source
+
+   1          #include "led.h"
+   2          #include <STC15F2K60S2.H>
+   3          static unsigned char a=0x00;
+   4          static unsigned char b=0xff;
+   5          void LED_dis(unsigned char i,ena)
+   6          {
+   7   1              static unsigned char j=0x00;
+   8   1              static unsigned char k=0xff;
+   9   1              if(ena)
+  10   1              j |=(0x01<<i);
+  11   1              else
+  12   1              j &=~(0x01<<i);
+  13   1              if(j!=k)
+  14   1              {
+  15   2                      P0=~j;
+  16   2                      P2=P2&0x1f|0x80;
+  17   2                      P2&=0x1f;
+  18   2                      k=j;
+  19   2              }
+  20   1      }
+  21          
+  22          void beep_dis(unsigned char ena)
+  23          {
+  24   1      
+  25   1              if(ena)
+  26   1              a |=0x40;
+  27   1              else
+  28   1              a &=~0x40;
+  29   1              if(a!=b)
+  30   1              {
+  31   2                      P0=a;
+  32   2                      P2=P2&0x1f|0xa0;
+  33   2                      P2&=0x1f;
+  34   2                      b=a;
+  35   2              }
+  36   1      }
+  37          
+  38          void realy_dis(unsigned char ena)
+  39          {
+  40   1      
+  41   1              if(ena)
+  42   1              a |=0x10;
+  43   1              else
+  44   1              a &=~0x10;
+  45   1              if(a!=b)
+  46   1                      {
+  47   2                      P0=a;
+  48   2                      P2=P2&0x1f|0xa0;
+  49   2                      P2&=0x1f;
+  50   2                      b=a;
+  51   2              }
+  52   1      }
+
+
+C51 COMPILER V9.60.7.0   LED                                                               02/26/2024 10:41:55 PAGE 2   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    129    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

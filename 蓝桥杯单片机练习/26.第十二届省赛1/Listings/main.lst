@@ -1,0 +1,214 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <INTRINS.H>
+   3          #include "onewire.h"
+   4          #include "iic.h"
+   5          #include "key.h"
+   6          #include "Seg.h"
+   7          #include "Led.h"
+   8          typedef unsigned char u8;
+   9          typedef unsigned int u16;
+  10          
+  11          u8 key_val,key_d,key_u,key_o;
+  12          u8 key_slow;
+  13          u8 seg_slow;
+  14          u8 pos=0;
+  15          u8 seg_buf[8]={10,10,10,10,10,10,10,10};
+  16          u8 pot[8]={0,0,0,0,0,0,0,0};
+  17          u8 Led[8]={0,0,0,0,0,0,0,0};
+  18          u8 mode=0;
+  19          u8 temp_d=25,temp_c=25;
+  20          bit outv_mode=0;
+  21          float T;
+  22          float V;
+  23          void Delay750ms()               //@12.000MHz
+  24          {
+  25   1              unsigned char i, j, k;
+  26   1      
+  27   1              _nop_();
+  28   1              _nop_();
+  29   1              i = 35;
+  30   1              j = 51;
+  31   1              k = 182;
+  32   1              do
+  33   1              {
+  34   2                      do
+  35   2                      {
+  36   3                              while (--k);
+  37   3                      } while (--j);
+  38   2              } while (--i);
+  39   1      }
+  40          
+  41          
+  42          
+  43          void Key_Pro()
+  44          {
+  45   1              if(key_slow) return;
+  46   1              key_slow=1;
+  47   1              
+  48   1              key_val=key_read();
+  49   1              key_d=key_val&(key_o^key_val);
+  50   1              key_u=~key_val&(key_o^key_val);
+  51   1              key_o=key_val;
+  52   1              
+  53   1              switch(key_d)
+  54   1              {
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 2   
+
+  55   2                      case 4 :
+  56   2                              if(++mode==3) mode=0;
+  57   2                              if(mode==1) temp_d=temp_c;
+  58   2                              if(mode==2) temp_c=temp_d;
+  59   2                              break;
+  60   2                      case 8 :
+  61   2                              if(mode==1)
+  62   2                              {
+  63   3                                      if(--temp_d==255)
+  64   3                                              temp_d=0;
+  65   3                              }
+  66   2                              break;
+  67   2                      case 9:
+  68   2                              if(mode==1)
+  69   2                              {
+  70   3                                      if(++temp_d==100)
+  71   3                                              temp_d=99;
+  72   3                              }
+  73   2                              break;
+  74   2                      case 5 :
+  75   2                              outv_mode=~outv_mode;
+  76   2                              break;
+  77   2                      
+  78   2              }
+  79   1      }
+  80          void OutV()
+  81          {
+  82   1              if(outv_mode==0)
+  83   1              {
+  84   2                      if(T<temp_c)
+  85   2                              V=0.00;
+  86   2                      else
+  87   2                              V=5.00;
+  88   2              }
+  89   1              else
+  90   1              {
+  91   2                      if(T<=20)
+  92   2                              V=1.0;
+  93   2                      else if(T>=20&&T<=40)
+  94   2                              V=0.15*T-2.0;
+  95   2                      else
+  96   2                              V=4.0;
+  97   2              }
+  98   1              Da_Write((u8)51*V);
+  99   1      }
+ 100          void Seg_Pro()
+ 101          {
+ 102   1              if(seg_slow)return;
+ 103   1              seg_slow=1;
+ 104   1              T=rd_t();
+ 105   1              OutV();
+ 106   1              //temp = T*100;
+ 107   1              switch(mode)
+ 108   1              {
+ 109   2                      case 0 ://2456
+ 110   2                              seg_buf[0]=14;
+ 111   2                              seg_buf[4]=(u8)T/10%10;
+ 112   2                              seg_buf[5]=(u8)T%10;
+ 113   2                              seg_buf[6]=(u16)(T*100)/10%10;//注意范围
+ 114   2                              seg_buf[7]=(u16)(T*100)%10;
+ 115   2                              pot[5]=1;
+ 116   2                              break;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 3   
+
+ 117   2                      case 1 :
+ 118   2                              seg_buf[0]=18;
+ 119   2                              seg_buf[4]=10;
+ 120   2                              seg_buf[5]=10;
+ 121   2                              seg_buf[6]=temp_d/10;
+ 122   2                              seg_buf[7]=temp_d%10;
+ 123   2                              pot[5]=0;
+ 124   2                              break;
+ 125   2                      case 2 :
+ 126   2                              seg_buf[0]=12;
+ 127   2                              seg_buf[4]=10;
+ 128   2                              seg_buf[5]=(u8)V;
+ 129   2                              seg_buf[6]=(u8)(V*10)%10;
+ 130   2                              seg_buf[7]=(u16)(V*100)%10;//注意范围
+ 131   2                              pot[5]=1;
+ 132   2                              break;
+ 133   2                              
+ 134   2              }
+ 135   1      }
+ 136          void Led_Pro()
+ 137          {
+ 138   1              Led[0]=~outv_mode;
+ 139   1              Led[1]=(mode==0);
+ 140   1              Led[2]=(mode==1);
+ 141   1              Led[3]=(mode==2);
+ 142   1      }
+ 143          void Timer0_Init(void)          //1毫秒@12.000MHz
+ 144          {
+ 145   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+ 146   1              TMOD &= 0xF0;                   //设置定时器模式
+ 147   1              TL0 = 0x18;                             //设置定时初始值
+ 148   1              TH0 = 0xFC;                             //设置定时初始值
+ 149   1              TF0 = 0;                                //清除TF0标志
+ 150   1              TR0 = 1;                                //定时器0开始计时
+ 151   1              ET0 = 1;                                //使能定时器0中断
+ 152   1              EA=1;
+ 153   1      }
+ 154          void Timer0Service() interrupt 1
+ 155          {
+ 156   1              if(++key_slow==10) key_slow=0;
+ 157   1              if(++seg_slow==500) seg_slow=0;
+ 158   1              if(++pos==8) pos=0;
+ 159   1              Seg_Display(pos,seg_buf[pos],pot[pos]);
+ 160   1              LED_Display(pos,Led[pos]);
+ 161   1      }
+ 162          void sys_init()
+ 163          {
+ 164   1              P0=0xff;
+ 165   1              P2=P2&0x1f|0x80;
+ 166   1              P2&=0x1f;
+ 167   1              
+ 168   1              P0=0x00;
+ 169   1              P2=P2&0x1f|0xa0;
+ 170   1              P2&=0x1f;
+ 171   1      }
+ 172          void main()
+ 173          {
+ 174   1              sys_init();
+ 175   1              rd_t();
+ 176   1              Delay750ms();
+ 177   1              Timer0_Init();
+ 178   1              while(1)
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2024 14:15:21 PAGE 4   
+
+ 179   1              {
+ 180   2                      Key_Pro();
+ 181   2                      Seg_Pro();
+ 182   2                      Led_Pro();
+ 183   2              }
+ 184   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    802    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     42    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
