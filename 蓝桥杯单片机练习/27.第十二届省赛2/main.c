@@ -34,10 +34,6 @@ void Key_Pro()
 	kdown=kval&(kold^kval);
 	kup=~kval&(kold^kval);
 	kold=kval;
-	if(kdown==4)
-	{
-		keyflag=1;
-	}
 	switch(kdown)
 	{
 		case 4:
@@ -48,6 +44,9 @@ void Key_Pro()
 			break;
 		case 6 :
 			if(vmode==1)  saver=r2;//EEPROM_Write(&r,0,1);
+			break;
+		case 7 :
+			keyflag=1;
 			break;
 	}
 	
@@ -143,6 +142,14 @@ void Led_Pro()
 		led[3]=(mode==1);
 		led[4]=(mode==2);
 	}
+	else
+	{
+		led[0]=0;
+		led[1]=0;
+		led[2]=0;
+		led[3]=0;
+		led[4]=0;
+	}
 }
 void Timer0_Init(void)		//1毫秒@12.000MHz
 {
@@ -174,14 +181,6 @@ void TimerService() interrupt 3
 	if(++pos==8) pos=0;
 	Seg_Display(pos,segbuf[pos],pot[pos]);
 	Led_Display(pos,led[pos]);
-	if(keyflag&&kval==7)
-	{
-		if(++keyflag>=1000)
-		{
-			keyflag=0;
-			flag=1;
-		}
-	}
 	if(++fre_delay==1000)
 	{
 		TR0=0;
@@ -191,7 +190,18 @@ void TimerService() interrupt 3
 		TH0=TL0=0;
 		TR0=1;
 	}
-	
+	if(keyflag)
+	{
+		if(++keyflag==1000)
+		{
+			keyflag=0;
+			if(kval)
+				flag^=1;
+			else
+				savef=fre;
+		}
+		
+	}
 }
 
 void sys_init()
