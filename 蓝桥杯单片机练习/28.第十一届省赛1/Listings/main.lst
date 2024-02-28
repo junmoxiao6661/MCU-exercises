@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:36:44 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -8,7 +8,7 @@ COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DE
 
 line level    source
 
-   1          #include <STC15F2K60S2.H>
+   1          /*#include <STC15F2K60S2.H>
    2          #include "onewire.h"
    3          #include "iic.h"
    4          #include "key.h"
@@ -32,192 +32,493 @@ line level    source
   22          bit wrong=0;
   23          void Key_Pro()
   24          {
-  25   1              if(kslow) return ;
-  26   1              kslow=1;
-  27   1              kval=Key_Read();//别忘了
-  28   1              kdown=kval&(kold^kval);
-  29   1              kold=kval;
-  30   1              switch(kdown)
-  31   1              {
-  32   2                      case 4:
-  33   2                              if(++mode==2) 
-  34   2                              {
-  35   3                                      if(tmax>=tmin)
-  36   3                                      {
-  37   4                                              t1=tmax;
-  38   4                                              t2=tmin;
-  39   4                                              wrong=0;
-  40   4                                      }
-  41   3                                      else
-  42   3                                      {
-  43   4                                              tmax=t1;
-  44   4                                              tmin=t2;
-  45   4                                              wrong=0;
-  46   4                                      }
-  47   3                                      mode=0;
-  48   3                              }
-  49   2                              if(mode==1) tmode=0;
-  50   2                              break;
-  51   2                      case 5 :
-  52   2                              tmode^=1;
-  53   2                              break;
-  54   2                      case 6:
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:36:44 PAGE 2   
+  25                  if(kslow) return ;
+  26                  kslow=1;
+  27                  kval=Key_Read();//别忘了
+  28                  kdown=kval&(kold^kval);
+  29                  kold=kval;
+  30                  switch(kdown)
+  31                  {
+  32                          case 4:
+  33                                  if(++mode==2) 
+  34                                  {
+  35                                          if(tmax>=tmin)
+  36                                          {
+  37                                                  t1=tmax;
+  38                                                  t2=tmin;
+  39                                                  wrong=0;
+  40                                          }
+  41                                          else
+  42                                          {
+  43                                                  tmax=t1;
+  44                                                  tmin=t2;
+  45                                                  wrong=0;
+  46                                          }
+  47                                          mode=0;
+  48                                  }
+  49                                  if(mode==1) tmode=0;
+  50                                  break;
+  51                          case 5 :
+  52                                  tmode^=1;
+  53                                  break;
+  54                          case 6:
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 2   
 
-  55   2                              if(mode==1)
-  56   2                              {
-  57   3                                      if(tmode==0)
-  58   3                                      {
-  59   4                                              ++tmin;
-  60   4                                              if(tmin>tmax) wrong=1;
-  61   4                                              else if(tmin==100) tmin=99,wrong=1;
-  62   4                                              else wrong=0;
-  63   4                                      }
-  64   3                                      else
-  65   3                                      {
-  66   4                                              ++tmax;
-  67   4                                              if(tmax==100) tmax=99,wrong=1;
-  68   4                                              else wrong=0;
-  69   4                                      }
-  70   3                              }
-  71   2                              break;
-  72   2                      case 7:
-  73   2                              if(mode==1)
-  74   2                              {
-  75   3                                      if(tmode==0)
-  76   3                                      {
-  77   4                                              --tmin;
-  78   4                                              if(tmin==255) tmin=0,wrong=1;
-  79   4                                              else wrong=0;
-  80   4                                      }
-  81   3                                      else
-  82   3                                      {
-  83   4                                              --tmax;
-  84   4                                              if(tmax<tmin) wrong=1;
-  85   4                                              else if(tmax==255) tmax=0,wrong=1;
-  86   4                                              else wrong=0;
-  87   4                                      }
-  88   3                              }
-  89   2                              break;
-  90   2              }
-  91   1      }
+  55                                  if(mode==1)
+  56                                  {
+  57                                          if(tmode==0)
+  58                                          {
+  59                                                  ++tmin;
+  60                                                  if(tmin>tmax) wrong=1;
+  61                                                  else if(tmin==100) tmin=99,wrong=1;
+  62                                                  else wrong=0;
+  63                                          }
+  64                                          else
+  65                                          {
+  66                                                  ++tmax;
+  67                                                  if(tmax==100) tmax=99,wrong=1;
+  68                                                  else wrong=0;
+  69                                          }
+  70                                  }
+  71                                  break;
+  72                          case 7:
+  73                                  if(mode==1)
+  74                                  {
+  75                                          if(tmode==0)
+  76                                          {
+  77                                                  --tmin;
+  78                                                  if(tmin==255) tmin=0,wrong=1;
+  79                                                  else wrong=0;
+  80                                          }
+  81                                          else
+  82                                          {
+  83                                                  --tmax;
+  84                                                  if(tmax<tmin) wrong=1;
+  85                                                  else if(tmax==255) tmax=0,wrong=1;
+  86                                                  else wrong=0;
+  87                                          }
+  88                                  }
+  89                                  break;
+  90                  }
+  91          }
   92          void Seg_Pro()
   93          {
-  94   1              if(segslow) return;
-  95   1              segslow=1;
-  96   1              T=rd_t();
-  97   1              tempt=T;
-  98   1              switch(mode)
-  99   1              {
- 100   2                      case 0 :
- 101   2                              seg[0]=12;
- 102   2                              seg[3]=10;
- 103   2                              seg[4]=10;
- 104   2                              seg[6]=tempt/10;
- 105   2                              seg[7]=tempt%10;
- 106   2                              break;
- 107   2                      case 1 :
- 108   2                              seg[0]=13;
- 109   2                              seg[3]=tmax/10;
- 110   2                              seg[4]=tmax%10;
- 111   2                              seg[6]=tmin/10;
- 112   2                              seg[7]=tmin%10;
- 113   2                              break;
- 114   2                              
- 115   2              }
- 116   1      }
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:36:44 PAGE 3   
+  94                  if(segslow) return;
+  95                  segslow=1;
+  96                  T=rd_t();
+  97                  tempt=T;
+  98                  switch(mode)
+  99                  {
+ 100                          case 0 :
+ 101                                  seg[0]=12;
+ 102                                  seg[3]=10;
+ 103                                  seg[4]=10;
+ 104                                  seg[6]=tempt/10;
+ 105                                  seg[7]=tempt%10;
+ 106                                  break;
+ 107                          case 1 :
+ 108                                  seg[0]=13;
+ 109                                  seg[3]=tmax/10;
+ 110                                  seg[4]=tmax%10;
+ 111                                  seg[6]=tmin/10;
+ 112                                  seg[7]=tmin%10;
+ 113                                  break;
+ 114                                  
+ 115                  }
+ 116          }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 3   
 
  117          void Led_Pro()
  118          {
- 119   1              led[0]=(tempt>tmax);
- 120   1              led[1]=(tempt>=tmin&&tempt<=tmax);
- 121   1              led[2]=(tempt<tmin);
- 122   1              led[3]=wrong;
- 123   1      }
+ 119                  led[0]=(tempt>tmax);
+ 120                  led[1]=(tempt>=tmin&&tempt<=tmax);
+ 121                  led[2]=(tempt<tmin);
+ 122                  led[3]=wrong;
+ 123          }
  124          void DA()
  125          {
- 126   1              if(tempt>tmax)
- 127   1                      Da_Write(4*51);
- 128   1              else if(tempt>=tmin&&tempt<=tmax)
- 129   1                      Da_Write(3*51);
- 130   1              else 
- 131   1                      Da_Write(2*51);
- 132   1                      
- 133   1      }
+ 126                  if(tempt>tmax)
+ 127                          Da_Write(4*51);
+ 128                  else if(tempt>=tmin&&tempt<=tmax)
+ 129                          Da_Write(3*51);
+ 130                  else 
+ 131                          Da_Write(2*51);
+ 132                          
+ 133          }
  134          void Timer0_Init(void)          //1毫秒@12.000MHz
  135          {
- 136   1              AUXR &= 0x7F;                   //定时器时钟12T模式
- 137   1              TMOD &= 0xF0;                   //设置定时器模式
- 138   1              TL0 = 0x18;                             //设置定时初始值
- 139   1              TH0 = 0xFC;                             //设置定时初始值
- 140   1              TF0 = 0;                                //清除TF0标志
- 141   1              TR0 = 1;                                //定时器0开始计时
- 142   1              ET0=1;
- 143   1              EA=1;
- 144   1      }
+ 136                  AUXR &= 0x7F;                   //定时器时钟12T模式
+ 137                  TMOD &= 0xF0;                   //设置定时器模式
+ 138                  TL0 = 0x18;                             //设置定时初始值
+ 139                  TH0 = 0xFC;                             //设置定时初始值
+ 140                  TF0 = 0;                                //清除TF0标志
+ 141                  TR0 = 1;                                //定时器0开始计时
+ 142                  ET0=1;
+ 143                  EA=1;
+ 144          }
  145          
  146          void Timer_Service() interrupt 1
  147          {
- 148   1              if(++kslow==10) kslow=0;
- 149   1              if(++segslow==500) segslow=0;
- 150   1              if(++pos==8) pos=0;
- 151   1              Seg_Display(pos,seg[pos],pot[pos]);
- 152   1              Led_Display(pos,led[pos]);
- 153   1      }
+ 148                  if(++kslow==10) kslow=0;
+ 149                  if(++segslow==500) segslow=0;
+ 150                  if(++pos==8) pos=0;
+ 151                  Seg_Display(pos,seg[pos],pot[pos]);
+ 152                  Led_Display(pos,led[pos]);
+ 153          }
  154          void sysinit()
  155          {
- 156   1              P0=0xff;
- 157   1              P2=P2&0x1f|0x80;
- 158   1              P2=P2&0x1f;
- 159   1              
- 160   1              P0=0x00;
- 161   1              P2=P2&0x1f|0xa0;
- 162   1              P2=P2&0x1f;
- 163   1      }
+ 156                  P0=0xff;
+ 157                  P2=P2&0x1f|0x80;
+ 158                  P2=P2&0x1f;
+ 159                  
+ 160                  P0=0x00;
+ 161                  P2=P2&0x1f|0xa0;
+ 162                  P2=P2&0x1f;
+ 163          }
  164          void Delay750ms()               //@11.0592MHz
  165          {
- 166   1              unsigned char i, j, k;
- 167   1      
- 168   1              i = 32;
- 169   1              j = 133;
- 170   1              k = 87;
- 171   1              do
- 172   1              {
- 173   2                      do
- 174   2                      {
- 175   3                              while (--k);
- 176   3                      } while (--j);
- 177   2              } while (--i);
- 178   1      }
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:36:44 PAGE 4   
+ 166                  unsigned char i, j, k;
+ 167          
+ 168                  i = 32;
+ 169                  j = 133;
+ 170                  k = 87;
+ 171                  do
+ 172                  {
+ 173                          do
+ 174                          {
+ 175                                  while (--k);
+ 176                          } while (--j);
+ 177                  } while (--i);
+ 178          }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 4   
 
  179          
  180          void main()
  181          {
- 182   1              sysinit();
- 183   1              rd_t();
- 184   1              Delay750ms();
- 185   1              Timer0_Init();
- 186   1              while(1)
- 187   1              {
- 188   2                      Key_Pro();
- 189   2                      Seg_Pro();
- 190   2                      Led_Pro();
- 191   2                      DA();
- 192   2              }
- 193   1      }
+ 182                  sysinit();
+ 183                  rd_t();
+ 184                  Delay750ms();
+ 185                  Timer0_Init();
+ 186                  while(1)
+ 187                  {
+ 188                          Key_Pro();
+ 189                          Seg_Pro();
+ 190                          Led_Pro();
+ 191                          DA();
+ 192                  }
+ 193          }*/
+ 194          #include<stc15f2k60s2.h>
+ 195          #include<iic.h>
+ 196          
+ 197          typedef unsigned int uint;
+ 198          typedef unsigned char uchar;
+ 199          
+ 200          int yi,er,san,si,wu,liu,qi,ba;
+ 201          
+ 202          uchar code smg[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0xc1,0x8c,0xc8,0xff,
+ 203          0xc0&0x7f,0xf9&0x7f,0xa4&0x7f,0xb0&0x7f,0x99&0x7f,0x92&0x7f,0x82&0x7f,0xf8&0x7f,0x80&0x7f,0x90&0x7f};
+ 204          
+ 205          int dianya,jishu,diancp,jiemian,flag,t,tt,liang,wuxiao,flagg,wuu;
+ 206          void delay1ms(int ms);
+ 207          void display1();
+ 208          void display2();
+ 209          void shangdian();
+ 210          void Timer0Init(void)   ;       //1毫秒@12.000MHz
+ 211          void juzhen();
+ 212          main()
+ 213          {
+ 214   1              shangdian();
+ 215   1              Timer0Init();
+ 216   1              diancp=a24c02read(0);
+*** WARNING C206 IN LINE 216 OF main.c: 'a24c02read': missing function-prototype
+*** ERROR C267 IN LINE 216 OF main.c: 'a24c02read': requires ANSI-style prototype
+ 217   1              diancp=diancp*10;
+ 218   1              while(1)
+ 219   1              {
+ 220   2                      juzhen();
+ 221   2                      dianya=getad(0x03);
+ 222   2                      if(jiemian==0)//数据界面
+ 223   2                      {
+ 224   3                              yi=10;er=san=si=wu=13;liu=dianya/100+14;qi=dianya%100/10;ba=dianya%10;
+ 225   3                      }
+ 226   2                      else if(jiemian==1)//参数界面
+ 227   2                      {
+ 228   3                        yi=11;er=san=si=wu=13;liu=diancp/100+14;qi=diancp%100/10;ba=diancp%10;
+ 229   3                      }
+ 230   2                      else if(jiemian==2)//计数界面
+ 231   2                      {
+ 232   3                              yi=12;er=san=si=wu=liu=13;qi=jishu/10;ba=jishu%10;
+ 233   3      
+ 234   3                      }
+ 235   2              
+ 236   2                if(dianya>diancp)
+ 237   2                      {
+ 238   3                        flag=1;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 5   
 
+ 239   3                              t=tt=0;
+ 240   3                              TR0=0;
+ 241   3                              liang=0;
+ 242   3                              flagg=0;
+ 243   3                              
+ 244   3                      }
+ 245   2                      else if(dianya<diancp)
+ 246   2                      {
+ 247   3                              
+ 248   3                              TR0=1;
+ 249   3                              flagg=1;
+ 250   3                      
+ 251   3                      }
+ 252   2                      
+ 253   2                      if((flag==1)&&(flagg==1))
+ 254   2                      {
+ 255   3                              jishu++;
+ 256   3                              flag=0;
+ 257   3                              flagg=0;
+ 258   3                      }
+ 259   2      
+ 260   2                                      
+ 261   2                      if((liang==0)&&(jishu%2==0)&&(wuu==0))
+ 262   2                      {
+ 263   3                               P2=0X80;P0=0XFF;       
+ 264   3                      }
+ 265   2                      else if((liang==0)&&(jishu%2==0)&&(wuu==1))
+ 266   2                      {
+ 267   3                               P2=0X80;P0=~(0X04);
+ 268   3                      }
+ 269   2                      else if((liang==0)&&(jishu%2==1)&&(wuu==0))
+ 270   2                {
+ 271   3                              P2=0X80;P0=~(0X02);
+ 272   3                      }
+ 273   2                      else if((liang==0)&&(jishu%2==1)&&(wuu==1))
+ 274   2              {  P2=0X80;P0=~(0X04|0x02);
+ 275   3                      }
+ 276   2                      else if((liang==1)&&(jishu%2==0)&&(wuu==0))
+ 277   2                              {P2=0X80;P0=~(0X01);
+ 278   3                      }
+ 279   2                      else if((liang==1)&&(jishu%2==0)&&(wuu==1))
+ 280   2                              {P2=0X80;P0=~(0X01|0x04);
+ 281   3                      }
+ 282   2                      else if((liang==1)&&(jishu%2==1)&&(wuu==0))
+ 283   2                              {P2=0X80;P0=~(0X01|0x02);
+ 284   3                                      
+ 285   3                      }
+ 286   2                      else if((liang==1)&&(jishu%2==1)&&(wuu==1))
+ 287   2                              { P2=0X80;P0=~(0X01|0x02|0x04);
+ 288   3                      }
+ 289   2               display1();
+ 290   2         display2();
+ 291   2              
+ 292   2              }
+ 293   1              
+ 294   1              
+ 295   1      
+ 296   1      }
+ 297          void shangdian()
+ 298          {
+ 299   1              P2=0XA0;P0=0X00;
+ 300   1              P2=0X80;P0=0XFF;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 6   
 
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    596    ----
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
-   PDATA SIZE       =   ----    ----
-   DATA SIZE        =     41    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =      2    ----
-END OF MODULE INFORMATION.
+ 301   1              P2=0XC0;P0=0XFF;
+ 302   1              P2=0XE0;P0=0XFF;
+ 303   1      }
+ 304          void delay1ms(int ms)
+ 305          {
+ 306   1              int i;
+ 307   1              for(;ms>0;ms--)
+ 308   1              {
+ 309   2                      for(i=845;i>0;i--) ;
+ 310   2              
+ 311   2              }
+ 312   1      
+ 313   1      }
+ 314          void Timer0Init(void)           //1毫秒@12.000MHz
+ 315          {
+ 316   1              AUXR |= 0x80;           //定时器时钟1T模式
+ 317   1              TMOD &= 0xF0;           //设置定时器模式
+ 318   1              TL0 = 0x20;             //设置定时初值
+ 319   1              TH0 = 0xD1;             //设置定时初值
+ 320   1              TF0 = 0;                //清除TF0标志
+ 321   1              TR0 = 0;                //定时器0开始计时
+ 322   1              EA=1;
+ 323   1              ET0=1;
+ 324   1      }
+ 325          void time0() interrupt 1
+ 326          {
+ 327   1              t++;
+ 328   1              if(t==1000)
+ 329   1              { t=0;
+ 330   2                      tt++;
+ 331   2                if(tt==5)
+ 332   2                      {
+ 333   3                              liang=1;
+ 334   3      
+ 335   3                      }
+ 336   2              
+ 337   2              }
+ 338   1      
+ 339   1      
+ 340   1      }
+ 341          
+ 342          void display1()
+ 343          {
+ 344   1              P2=0XC0;P0=0X01;
+ 345   1              P2=0XE0;P0=smg[yi];
+ 346   1              delay1ms(1);
+ 347   1              P2=0XC0;P0=0X02;
+ 348   1              P2=0XE0;P0=smg[er];
+ 349   1              delay1ms(1);    
+ 350   1              P2=0XC0;P0=0X04;
+ 351   1              P2=0XE0;P0=smg[san];
+ 352   1              delay1ms(1);
+ 353   1              P2=0XC0;P0=0X08;
+ 354   1              P2=0XE0;P0=smg[si];
+ 355   1              delay1ms(1);
+ 356   1      }
+ 357          void display2()
+ 358          {
+ 359   1              P2=0XC0;P0=0X10;
+ 360   1              P2=0XE0;P0=smg[wu];
+ 361   1              delay1ms(1);
+ 362   1              P2=0XC0;P0=0X20;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 7   
 
+ 363   1              P2=0XE0;P0=smg[liu];
+ 364   1              delay1ms(1);    
+ 365   1              P2=0XC0;P0=0X40;
+ 366   1              P2=0XE0;P0=smg[qi];
+ 367   1              delay1ms(1);
+ 368   1              P2=0XC0;P0=0X80;
+ 369   1              P2=0XE0;P0=smg[ba];
+ 370   1              delay1ms(1);
+ 371   1              P2=0XC0;P0=0X80;
+ 372   1              P2=0XE0;P0=0xff;        
+ 373   1      }
+ 374          void juzhen()
+ 375          {
+ 376   1              uchar temp;
+ 377   1                      
+ 378   1      P44=1;P42=1;P3=0XdF;
+ 379   1              temp=P3;
+ 380   1              temp=temp&0x0f;
+ 381   1              if(temp!=0x0f)
+ 382   1              {
+ 383   2                      delay1ms(5);
+ 384   2                      temp=P3;
+ 385   2                      temp=temp&0x0f;
+ 386   2                      if(temp!=0x0f)
+ 387   2                      {
+ 388   3                              temp=P3;
+ 389   3                              switch(temp)
+ 390   3                              {
+ 391   4                              
+ 392   4                                      case 0xdb:
+ 393   4                                      if(jiemian==2){
+ 394   5                                      wuu=0;
+ 395   5                                      jishu=0;}
+ 396   4                                      else {
+ 397   5                                              wuxiao++;
+ 398   5                                              if(wuxiao==3)
+ 399   5                                              {       wuu=1;
+ 400   6                                          wuxiao=0;
+ 401   6                                      }}
+ 402   4                                      break;
+ 403   4                                      case 0xd7:
+ 404   4                                              wuu=0;
+ 405   4                                      jiemian++;
+ 406   4                                      if(jiemian==2)
+ 407   4                                      { 
+ 408   5                                        a24c02xie(0,diancp/10);
+ 409   5                                              delay1ms(5);
+ 410   5                                              
+ 411   5                                      }
+ 412   4                                      if(jiemian==3) jiemian=0;
+ 413   4                                      break;
+ 414   4      
+ 415   4                              }
+ 416   3                              while(temp!=0x0f)
+ 417   3                              {
+ 418   4                                      temp=P3;
+ 419   4                          temp=temp&0x0f;                     
+ 420   4                              }
+ 421   3                      
+ 422   3                      }
+ 423   2              
+ 424   2              }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 8   
 
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+ 425   1      
+ 426   1      P44=1;P42=1;P3=0XeF;
+ 427   1              temp=P3;
+ 428   1              temp=temp&0x0f;
+ 429   1              if(temp!=0x0f)
+ 430   1              {
+ 431   2                      delay1ms(5);
+ 432   2                      temp=P3;
+ 433   2                      temp=temp&0x0f;
+ 434   2                      if(temp!=0x0f)
+ 435   2                      {
+ 436   3                              temp=P3;
+ 437   3                              switch(temp)
+ 438   3                              {
+ 439   4                                      
+ 440   4                                      case 0xeb:
+ 441   4                                              if(jiemian==1){
+ 442   5                                                      wuu=0;
+ 443   5                                      diancp=diancp-50;
+ 444   5               if(diancp==-50)
+ 445   5                                       {
+ 446   6                                        diancp=500;
+ 447   6                                       }}
+ 448   4                                      else {wuxiao++;
+ 449   5                                              if(wuxiao==3)
+ 450   5                                              {wuu=1;wuxiao=0;}
+ 451   5                                      }
+ 452   4                                      break;
+ 453   4                                      case 0xe7: 
+ 454   4                                      if(jiemian==1){ 
+ 455   5                                              wuu=0;
+ 456   5                                      diancp=diancp+50;
+ 457   5               if(diancp==550)
+ 458   5                                       {
+ 459   6                                        diancp=0;
+ 460   6                                       }}
+ 461   4                                      else {wuxiao++;
+ 462   5                                              if(wuxiao==3)
+ 463   5                                              {       wuu=1;
+ 464   6                                      wuxiao=0;}}
+ 465   4                                      break;
+ 466   4      
+ 467   4                              }
+ 468   3                              while(temp!=0x0f)
+ 469   3                              {
+ 470   4                                      temp=P3;
+ 471   4                          temp=temp&0x0f;                     
+ 472   4                              }
+ 473   3                      
+ 474   3                      }
+ 475   2              
+ 476   2              }
+ 477   1      
+ 478   1      }
+ 479          
+ 480          
+ 481          
+ 482          
+ 483          
+ 484          
+ 485          
+ 486          
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2024 13:41:56 PAGE 9   
+
+ 487          
+ 488          
+ 489          
+ 490          
+ 491          
+ 492          
+ 493          
+ 494          
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  1 ERROR(S)
