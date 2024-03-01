@@ -1,8 +1,8 @@
 /*
-  ³ÌÐòËµÃ÷: IIC×ÜÏßÇý¶¯³ÌÐò
-  Èí¼þ»·¾³: Keil uVision 4.10 
-  Ó²¼þ»·¾³: CT107µ¥Æ¬»ú×ÛºÏÊµÑµÆ½Ì¨ 8051£¬12MHz
-  ÈÕ    ÆÚ: 2011-8-9
+  ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½: IICï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: Keil uVision 4.10 
+  Ó²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: CT107ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½Ûºï¿½ÊµÑµÆ½Ì¨ 8051ï¿½ï¿½12MHz
+  ï¿½ï¿½    ï¿½ï¿½: 2011-8-9
 */
 
 #include "reg52.h"
@@ -13,16 +13,16 @@
 #define SlaveAddrW 0xA0
 #define SlaveAddrR 0xA1
 
-//×ÜÏßÒý½Å¶¨Òå
-sbit SDA = P2^1;  /* Êý¾ÝÏß */
-sbit SCL = P2^0;  /* Ê±ÖÓÏß */
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
+sbit SDA = P2^1;  /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+sbit SCL = P2^0;  /* Ê±ï¿½ï¿½ï¿½ï¿½ */
 
 void IIC_Delay(unsigned char i)
 {
     do{_nop_();}
     while(i--);        
 }
-//×ÜÏßÆô¶¯Ìõ¼þ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void IIC_Start(void)
 {
     SDA = 1;
@@ -33,7 +33,7 @@ void IIC_Start(void)
     SCL = 0;	
 }
 
-//×ÜÏßÍ£Ö¹Ìõ¼þ
+//ï¿½ï¿½ï¿½ï¿½Í£Ö¹ï¿½ï¿½ï¿½ï¿½
 void IIC_Stop(void)
 {
     SDA = 0;
@@ -43,11 +43,11 @@ void IIC_Stop(void)
     IIC_Delay(DELAY_TIME);
 }
 
-//·¢ËÍÓ¦´ð
+//ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½
 void IIC_SendAck(bit ackbit)
 {
     SCL = 0;
-    SDA = ackbit;  					// 0£ºÓ¦´ð£¬1£º·ÇÓ¦´ð
+    SDA = ackbit;  					// 0ï¿½ï¿½Ó¦ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½
     IIC_Delay(DELAY_TIME);
     SCL = 1;
     IIC_Delay(DELAY_TIME);
@@ -56,7 +56,7 @@ void IIC_SendAck(bit ackbit)
     IIC_Delay(DELAY_TIME);
 }
 
-//µÈ´ýÓ¦´ð
+//ï¿½È´ï¿½Ó¦ï¿½ï¿½
 bit IIC_WaitAck(void)
 {
     bit ackbit;
@@ -69,7 +69,7 @@ bit IIC_WaitAck(void)
     return ackbit;
 }
 
-//Í¨¹ýI2C×ÜÏß·¢ËÍÊý¾Ý
+//Í¨ï¿½ï¿½I2Cï¿½ï¿½ï¿½ß·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void IIC_SendByte(unsigned char byt)
 {
     unsigned char i;
@@ -88,7 +88,7 @@ void IIC_SendByte(unsigned char byt)
     SCL  = 0;  
 }
 
-//´ÓI2C×ÜÏßÉÏ½ÓÊÕÊý¾Ý
+//ï¿½ï¿½I2Cï¿½ï¿½ï¿½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 unsigned char IIC_RecByte(void)
 {
     unsigned char i, da;
@@ -102,4 +102,33 @@ unsigned char IIC_RecByte(void)
 	IIC_Delay(DELAY_TIME);
     }
     return da;    
+}
+
+unsigned char Ad_Read(unsigned char addr)
+{
+    unsigned char temp=0;
+    IIC_Start();
+    IIC_SendByte(0x90);
+    IIC_WaitAck();
+    IIC_SendByte(addr);
+    IIC_WaitAck();
+
+    IIC_Start();
+    IIC_SendByte(0x91);
+    IIC_WaitAck();
+    temp=IIC_RecByte();
+    IIC_SendAck(1);
+    IIC_Stop();
+    return temp;
+}
+void Da_Write(unsigned char dat)
+{
+	IIC_Start();
+    IIC_SendByte(0x90);
+    IIC_WaitAck();
+    IIC_SendByte(0x40);
+    IIC_WaitAck();
+	IIC_SendByte(dat);
+	IIC_WaitAck();
+	IIC_Stop();
 }
