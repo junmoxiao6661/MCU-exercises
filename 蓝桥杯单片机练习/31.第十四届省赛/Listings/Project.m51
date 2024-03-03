@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    03/03/2024  20:31:31  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    03/03/2024  21:19:00  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.4.0, INVOKED BY:
@@ -59,7 +59,7 @@ LINK MAP OF MODULE:  .\Objects\Project (MAIN)
             CODE    04B8H     0211H     UNIT         ?PR?SEG_PRO?MAIN
             CODE    06C9H     0138H     UNIT         ?PR?TRIGGER?MAIN
             CODE    0801H     0103H     UNIT         ?PR?TIMER_SERVICE?MAIN
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 2
 
 
             CODE    0904H     00B2H     UNIT         ?PR?LED_PRO?MAIN
@@ -119,7 +119,7 @@ SEGMENT                                  BIT_GROUP          DATA_GROUP
   +--> ?PR?RD_T?ONEWIRE
   +--> ?PR?_AD_READ?IIC
   +--> ?PR?TIMER1_INIT?MAIN
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 3
 
 
   +--> ?PR?TIMER0_INIT?MAIN
@@ -179,7 +179,7 @@ SEGMENT                                  BIT_GROUP          DATA_GROUP
   +--> ?PR?KEY_READ?KEY
 
 ?PR?SEG_PRO?MAIN                      -----    -----      -----    -----
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 4
 
 
   +--> ?PR?TRIGGER?MAIN
@@ -239,7 +239,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   D:0039H         PUBLIC        sumrh
   C:04B8H         PUBLIC        Seg_Pro
   D:003BH         PUBLIC        avrh
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 5
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 5
 
 
   D:003FH         PUBLIC        kslow
@@ -299,7 +299,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:0AE6H         LINE#         45
   C:0AECH         LINE#         46
   C:0AECH         LINE#         47
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 6
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 6
 
 
   C:0AF6H         LINE#         48
@@ -359,7 +359,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:06C9H         LINE#         97
   C:06C9H         LINE#         98
   C:06D0H         LINE#         99
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 7
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 7
 
 
   C:06EAH         LINE#         100
@@ -419,7 +419,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:053FH         LINE#         153
   C:0542H         LINE#         154
   C:0554H         LINE#         155
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 8
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 8
 
 
   C:055CH         LINE#         156
@@ -479,7 +479,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:0637H         LINE#         214
   C:063AH         LINE#         215
   C:063DH         LINE#         216
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 9
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 9
 
 
   C:0640H         LINE#         217
@@ -539,7 +539,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:0955H         LINE#         272
   C:0955H         LINE#         273
   C:0978H         LINE#         274
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 10
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 10
 
 
   C:09B5H         LINE#         275
@@ -584,51 +584,54 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:08E4H         LINE#         314
   C:08E4H         LINE#         315
   C:08E4H         LINE#         316
-  C:08E7H         LINE#         317
-  C:08E7H         LINE#         318
-  C:08E9H         LINE#         319
-  C:08E9H         LINE#         320
+  C:08E9H         LINE#         317
   -------         ENDPROC       TIMER_SERVICE
   -------         PROC          SYSINIT
-  C:0D8FH         LINE#         321
-  C:0D8FH         LINE#         322
-  C:0D8FH         LINE#         323
-  C:0D92H         LINE#         324
-  C:0D9AH         LINE#         325
-  C:0D9DH         LINE#         327
-  C:0DA0H         LINE#         328
-  C:0DA8H         LINE#         329
-  C:0DABH         LINE#         330
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 11
-
-
+  C:0D8FH         LINE#         318
+  C:0D8FH         LINE#         319
+  C:0D8FH         LINE#         320
+  C:0D92H         LINE#         321
+  C:0D9AH         LINE#         322
+  C:0D9DH         LINE#         324
+  C:0DA0H         LINE#         325
+  C:0DA8H         LINE#         326
+  C:0DABH         LINE#         327
   -------         ENDPROC       SYSINIT
   -------         PROC          MAIN
-  C:0D4CH         LINE#         331
-  C:0D4CH         LINE#         332
-  C:0D4CH         LINE#         333
-  C:0D4FH         LINE#         334
-  C:0D52H         LINE#         335
-  C:0D57H         LINE#         336
-  C:0D5AH         LINE#         337
-  C:0D5DH         LINE#         338
-  C:0D66H         LINE#         339
-  C:0D66H         LINE#         340
-  C:0D66H         LINE#         341
-  C:0D69H         LINE#         342
-  C:0D6CH         LINE#         343
-  C:0D6FH         LINE#         345
+  C:0D4CH         LINE#         328
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 11
+
+
+  C:0D4CH         LINE#         329
+  C:0D4CH         LINE#         330
+  C:0D4FH         LINE#         331
+  C:0D52H         LINE#         332
+  C:0D57H         LINE#         333
+  C:0D5AH         LINE#         334
+  C:0D5DH         LINE#         335
+  C:0D66H         LINE#         336
+  C:0D66H         LINE#         337
+  C:0D66H         LINE#         338
+  C:0D69H         LINE#         339
+  C:0D6CH         LINE#         340
+  C:0D6FH         LINE#         342
   -------         ENDPROC       MAIN
   -------         ENDMOD        MAIN
 
   -------         MODULE        DS1302
   C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
   D:0090H         PUBLIC        P1
   D:00A0H         PUBLIC        P2
   D:00B0H         PUBLIC        P3
+  D:00C0H         PUBLIC        P4
+  D:00C8H         PUBLIC        P5
+  D:00E8H         PUBLIC        P6
+  D:00F8H         PUBLIC        P7
   C:0CFDH         PUBLIC        _Read_Rtc
   D:00A8H         PUBLIC        IE
   D:00B8H         PUBLIC        IP
+  D:00D8H         PUBLIC        CCON
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
   C:0C0BH         PUBLIC        _Set_Rtc
@@ -636,7 +639,6 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   B:00A0H.3       PUBLIC        SDA
   B:0090H.7       PUBLIC        SCK
   C:0E28H         PUBLIC        _Write_Ds1302_Byte
-  D:00C8H         PUBLIC        T2CON
   C:0E50H         PUBLIC        _Write_Ds1302
   B:0090H.3       PUBLIC        RST
   D:00D0H         PUBLIC        PSW
@@ -645,32 +647,32 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   -------         DO            
   D:0006H         SYMBOL        i
   -------         ENDDO         
-  C:0E50H         LINE#         15
-  C:0E50H         LINE#         16
-  C:0E50H         LINE#         18
-  C:0E52H         LINE#         19
-  C:0E52H         LINE#         20
-  C:0E54H         LINE#         21
-  C:0E58H         LINE#         22
-  C:0E5CH         LINE#         23
-  C:0E5EH         LINE#         24
-  C:0E62H         LINE#         25
+  C:0E50H         LINE#         9
+  C:0E50H         LINE#         10
+  C:0E50H         LINE#         12
+  C:0E52H         LINE#         13
+  C:0E52H         LINE#         14
+  C:0E54H         LINE#         15
+  C:0E58H         LINE#         16
+  C:0E5CH         LINE#         17
+  C:0E5EH         LINE#         18
+  C:0E62H         LINE#         19
   -------         ENDPROC       _WRITE_DS1302
   -------         PROC          _WRITE_DS1302_BYTE
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 12
+
+
   D:0007H         SYMBOL        address
   D:0005H         SYMBOL        dat
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 12
-
-
-  C:0E28H         LINE#         27
-  C:0E28H         LINE#         28
-  C:0E28H         LINE#         29
-  C:0E2BH         LINE#         30
-  C:0E2EH         LINE#         31
-  C:0E31H         LINE#         32
-  C:0E34H         LINE#         33
-  C:0E39H         LINE#         34
-  C:0E3BH         LINE#         35
+  C:0E28H         LINE#         22
+  C:0E28H         LINE#         23
+  C:0E28H         LINE#         24
+  C:0E2BH         LINE#         25
+  C:0E2EH         LINE#         26
+  C:0E31H         LINE#         27
+  C:0E34H         LINE#         28
+  C:0E39H         LINE#         29
+  C:0E3BH         LINE#         30
   -------         ENDPROC       _WRITE_DS1302_BYTE
   -------         PROC          _READ_DS1302_BYTE
   D:0007H         SYMBOL        address
@@ -678,54 +680,54 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   D:0007H         SYMBOL        i
   D:0005H         SYMBOL        temp
   -------         ENDDO         
-  C:0C40H         LINE#         37
-  C:0C40H         LINE#         38
-  C:0C40H         LINE#         39
-  C:0C42H         LINE#         40
-  C:0C45H         LINE#         41
-  C:0C48H         LINE#         42
-  C:0C4BH         LINE#         43
-  C:0C4EH         LINE#         44
-  C:0C50H         LINE#         45
-  C:0C50H         LINE#         46
-  C:0C52H         LINE#         47
-  C:0C56H         LINE#         48
-  C:0C59H         LINE#         49
-  C:0C5CH         LINE#         50
-  C:0C5EH         LINE#         51
-  C:0C62H         LINE#         52
-  C:0C65H         LINE#         53
-  C:0C68H         LINE#         54
-  C:0C6BH         LINE#         55
-  C:0C6EH         LINE#         56
-  C:0C71H         LINE#         57
-  C:0C73H         LINE#         58
+  C:0C40H         LINE#         33
+  C:0C40H         LINE#         34
+  C:0C40H         LINE#         35
+  C:0C42H         LINE#         36
+  C:0C45H         LINE#         37
+  C:0C48H         LINE#         38
+  C:0C4BH         LINE#         39
+  C:0C4EH         LINE#         40
+  C:0C50H         LINE#         41
+  C:0C50H         LINE#         42
+  C:0C52H         LINE#         43
+  C:0C56H         LINE#         44
+  C:0C59H         LINE#         45
+  C:0C5CH         LINE#         46
+  C:0C5EH         LINE#         47
+  C:0C62H         LINE#         48
+  C:0C65H         LINE#         49
+  C:0C68H         LINE#         50
+  C:0C6BH         LINE#         51
+  C:0C6EH         LINE#         52
+  C:0C71H         LINE#         53
+  C:0C73H         LINE#         54
   -------         ENDPROC       _READ_DS1302_BYTE
   -------         PROC          _SET_RTC
   D:0008H         SYMBOL        rtc
   -------         DO            
   D:0004H         SYMBOL        i
   -------         ENDDO         
-  C:0C0BH         LINE#         59
-  C:0C11H         LINE#         60
-  C:0C11H         LINE#         62
-  C:0C18H         LINE#         63
-  C:0C1AH         LINE#         64
-  C:0C39H         LINE#         65
+  C:0C0BH         LINE#         55
+  C:0C11H         LINE#         56
+  C:0C11H         LINE#         58
+  C:0C18H         LINE#         59
+  C:0C1AH         LINE#         60
+  C:0C39H         LINE#         61
   -------         ENDPROC       _SET_RTC
   -------         PROC          _READ_RTC
   D:0008H         SYMBOL        rtc
   -------         DO            
   D:0004H         SYMBOL        i
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 13
+
+
   -------         ENDDO         
-  C:0CFDH         LINE#         68
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 13
-
-
-  C:0D03H         LINE#         69
-  C:0D03H         LINE#         71
-  C:0D05H         LINE#         72
-  C:0D24H         LINE#         73
+  C:0CFDH         LINE#         64
+  C:0D03H         LINE#         65
+  C:0D03H         LINE#         67
+  C:0D05H         LINE#         68
+  C:0D24H         LINE#         69
   -------         ENDPROC       _READ_RTC
   -------         ENDMOD        DS1302
 
@@ -777,11 +779,11 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:0E90H         LINE#         37
   C:0E90H         LINE#         38
   C:0E90H         LINE#         39
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 14
+
+
   C:0E92H         LINE#         40
   C:0E92H         LINE#         41
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 14
-
-
   C:0E95H         LINE#         42
   C:0E97H         LINE#         43
   -------         ENDPROC       IIC_STOP
@@ -837,11 +839,11 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   -------         ENDPROC       _IIC_SENDBYTE
   -------         PROC          IIC_RECBYTE
   -------         DO            
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 15
+
+
   D:0004H         SYMBOL        i
   D:0005H         SYMBOL        da
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 15
-
-
   -------         ENDDO         
   C:0DACH         LINE#         92
   C:0DACH         LINE#         93
@@ -897,11 +899,11 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   D:0088H         PUBLIC        TCON
   D:00C8H         PUBLIC        T2CON
   D:00D0H         PUBLIC        PSW
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 16
+
+
   C:0DFDH         SYMBOL        L?0017
   -------         PROC          L?0016
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 16
-
-
   -------         ENDPROC       L?0016
   C:0DFDH         SYMBOL        L?0017
   -------         PROC          _DELAY_ONEWIRE
@@ -957,11 +959,11 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:0D25H         LINE#         54
   C:0D25H         LINE#         55
   C:0D25H         LINE#         56
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 17
+
+
   C:0D27H         LINE#         58
   C:0D29H         LINE#         59
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 17
-
-
   C:0D30H         LINE#         60
   C:0D32H         LINE#         61
   C:0D39H         LINE#         62
@@ -1017,11 +1019,11 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   B:00B0H.5       PUBLIC        P35
   D:00D0H         PUBLIC        PSW
   -------         PROC          KEY_READ
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 18
+
+
   -------         DO            
   D:0007H         SYMBOL        temp
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 18
-
-
   -------         ENDDO         
   C:0A42H         LINE#         3
   C:0A42H         LINE#         4
@@ -1077,11 +1079,11 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   C:0B1BH         LINE#         5
   C:0B1BH         LINE#         6
   C:0B1BH         LINE#         7
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 19
+
+
   C:0B1EH         LINE#         8
   C:0B26H         LINE#         9
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 19
-
-
   C:0B29H         LINE#         11
   C:0B30H         LINE#         12
   C:0B38H         LINE#         13
@@ -1137,10 +1139,10 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project (MAIN)
   -------         MODULE        ?C?FPADD
   C:0025H         PUBLIC        ?C?FPADD
   C:0021H         PUBLIC        ?C?FPSUB
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  21:19:00  PAGE 20
+
+
   -------         ENDMOD        ?C?FPADD
-
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/03/2024  20:31:31  PAGE 20
-
 
   -------         MODULE        ?C?FPMUL
   C:0116H         PUBLIC        ?C?FPMUL

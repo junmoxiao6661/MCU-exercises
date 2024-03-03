@@ -1,20 +1,19 @@
-/*
-  ����˵��: ��������������
-  ��������: Keil uVision 4.10 
-  Ӳ������: CT107��Ƭ���ۺ�ʵѵƽ̨(�ⲿ����12MHz) STC89C52RC��Ƭ��
-  ��    ��: 2011-8-9
+/*	# 	单总线代码片段说明
+	1. 	本文件夹中提供的驱动代码供参赛选手完成程序设计参考。
+	2. 	参赛选手可以自行编写相关代码或以该代码为基础，根据所选单片机类型、运行速度和试题
+		中对单片机时钟频率的要求，进行代码调试和修改。
 */
-#include "reg52.h"
 
-sbit DQ = P1^4;  //�����߽ӿ�
-
-//��������ʱ����
-void Delay_OneWire(unsigned int t)  //STC89C52RC
+//
+void Delay_OneWire(unsigned int t)  
 {
-	while(t--);
+	unsigned char i;
+	while(t--){
+		for(i=0;i<12;i++);
+	}
 }
 
-//ͨ����������DS18B20дһ���ֽ�
+//
 void Write_DS18B20(unsigned char dat)
 {
 	unsigned char i;
@@ -29,7 +28,7 @@ void Write_DS18B20(unsigned char dat)
 	Delay_OneWire(5);
 }
 
-//��DS18B20��ȡһ���ֽ�
+//
 unsigned char Read_DS18B20(void)
 {
 	unsigned char i;
@@ -49,7 +48,7 @@ unsigned char Read_DS18B20(void)
 	return dat;
 }
 
-//DS18B20�豸��ʼ��
+//
 bit init_ds18b20(void)
 {
   	bit initflag = 0;
@@ -65,9 +64,3 @@ bit init_ds18b20(void)
   
   	return initflag;
 }
-
-
-
-
-
-
