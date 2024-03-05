@@ -52,3 +52,18 @@ unsigned char Read_Ds1302_Byte ( unsigned char address )
 	SDA=1;	_nop_();
 	return (temp);			
 }
+
+void Set_Rtc(unsigned char *rtc)
+{
+	Write_Ds1302_Byte(0x8e,0x00);
+	Write_Ds1302_Byte(0x84,rtc[0]);
+	Write_Ds1302_Byte(0x82,rtc[1]);
+	Write_Ds1302_Byte(0x80,rtc[2]);
+	Write_Ds1302_Byte(0x8e,0x80);
+}
+void Read_Rtc(unsigned char *rtc)
+{
+	rtc[0]=Read_Ds1302_Byte(0x85);
+	rtc[1]=Read_Ds1302_Byte(0x83);
+	rtc[2]=Read_Ds1302_Byte(0x81);
+}

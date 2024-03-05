@@ -68,7 +68,6 @@ bit init_ds18b20(void)
 
 float rd_t()
 {
-	float temp;
 	unsigned char low=0,high=0;
 	init_ds18b20();
 	Write_DS18B20(0xcc);
