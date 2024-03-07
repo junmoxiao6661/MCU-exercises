@@ -5,7 +5,6 @@
 */								
 
 //
-#include "ds1302.h"
 void Write_Ds1302(unsigned  char temp) 
 {
 	unsigned char i;
