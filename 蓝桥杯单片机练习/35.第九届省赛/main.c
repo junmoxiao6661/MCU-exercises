@@ -11,7 +11,10 @@ u8 segslow,pos;
 u8 seg[8]={10,10,10,10,10,10,10,10};
 u8 pot[8]={0,0,0,0,0,0,0,0};
 u8 led[8]={0,0,0,0,0,0,0,0};
-
+u8 mode;
+u16 led_t=400;
+u16 led_cnt=0;
+u8 led_pos=0;
 void Key_Pro()
 {
 	if(kslow) return ;
@@ -25,11 +28,23 @@ void Seg_Pro()
 {
 	if(segslow) return ;
 	segslow=1;
+	switch(mode)
+	{
+		case 0:
+			seg[0]=0;
+			seg[1]=mode+1;
+			seg[2]=0;
+			break;
+	}
 }
-
+	
 void Led_Pro()
 {
-
+	u8 i;
+	if(mode==0) 
+	{
+		
+	}
 }
 void Timer0_Init(void)		//1毫秒@12.000MHz
 {
@@ -50,6 +65,10 @@ void Timer0_Isr(void) interrupt 1
 	if(++pos==8) pos=0;
 	Seg_Display(pos,seg[pos],pot[pos]);
 	Led_Display(pos,led[pos]);
+	if(mode==0)
+	{
+		led_cnt++;
+	}
 }
 void sysinit()
 {

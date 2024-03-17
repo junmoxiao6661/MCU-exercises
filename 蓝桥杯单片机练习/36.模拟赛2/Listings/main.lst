@@ -1,0 +1,92 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              03/17/2024 21:37:22 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include "iic.h"
+   3          #include "onewire.h"
+   4          #include "uart.h"
+   5          #include "key.h"
+   6          #include <stdlib.h>
+   7          typedef unsigned char u8;
+   8          typedef unsigned int u16;
+   9          
+  10          u8 uslow;
+  11          u8 urecv[10];
+  12          u8 urecvindex;
+  13          u8 usend[10];
+  14          
+  15          void Uart_Pro()
+  16          {
+  17   1              if(uslow) return ;
+  18   1              uslow=1;
+  19   1              if(urecv[0]==0xa0)
+  20   1              {
+  21   2                      P2=P2&0x1f|0x80;
+  22   2                      P0=~P0;
+  23   2                      urecv[0]=0;
+  24   2                      urecvindex=0;
+  25   2              }
+  26   1      }
+  27          void Timer0_Init(void)          //1毫秒@12.000MHz
+  28          {
+  29   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+  30   1              TMOD &= 0xF0;                   //设置定时器模式
+  31   1              TL0 = 0x18;                             //设置定时初始值
+  32   1              TH0 = 0xFC;                             //设置定时初始值
+  33   1              TF0 = 0;                                //清除TF0标志
+  34   1              TR0 = 1;                                //定时器0开始计时
+  35   1              ET0=1;
+  36   1              EA=1;
+  37   1      }
+  38          
+  39          void Timer_Service() interrupt 1
+  40          {
+  41   1              if(++uslow==200) uslow=0;
+  42   1      }
+  43          
+  44          void UartServer() interrupt 4
+  45          {
+  46   1              if(RI==1)
+  47   1              {
+  48   2                      urecv[urecvindex]=SBUF;
+  49   2                      urecvindex++;
+  50   2                      RI=0;
+  51   2              }
+  52   1              
+  53   1      }
+  54          void main()
+C51 COMPILER V9.60.7.0   MAIN                                                              03/17/2024 21:37:22 PAGE 2   
+
+  55          {
+  56   1              P2=P2&0x1f|0x80;
+  57   1              P0=0xff;
+  58   1              Timer0_Init();
+  59   1              UartInit();
+  60   1              SendByte(0xa0);
+  61   1              while(1)
+  62   1              {
+  63   2                      Uart_Pro();
+  64   2              }
+  65   1      }
+  66                  
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    126    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     22    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
