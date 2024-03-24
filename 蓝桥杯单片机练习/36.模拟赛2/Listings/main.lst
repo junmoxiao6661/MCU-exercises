@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              03/17/2024 21:37:22 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/24/2024 00:34:21 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -13,79 +13,230 @@ line level    source
    3          #include "onewire.h"
    4          #include "uart.h"
    5          #include "key.h"
-   6          #include <stdlib.h>
-   7          typedef unsigned char u8;
-   8          typedef unsigned int u16;
-   9          
-  10          u8 uslow;
-  11          u8 urecv[10];
-  12          u8 urecvindex;
-  13          u8 usend[10];
-  14          
-  15          void Uart_Pro()
-  16          {
-  17   1              if(uslow) return ;
-  18   1              uslow=1;
-  19   1              if(urecv[0]==0xa0)
-  20   1              {
-  21   2                      P2=P2&0x1f|0x80;
-  22   2                      P0=~P0;
-  23   2                      urecv[0]=0;
-  24   2                      urecvindex=0;
-  25   2              }
-  26   1      }
-  27          void Timer0_Init(void)          //1毫秒@12.000MHz
-  28          {
-  29   1              AUXR &= 0x7F;                   //定时器时钟12T模式
-  30   1              TMOD &= 0xF0;                   //设置定时器模式
-  31   1              TL0 = 0x18;                             //设置定时初始值
-  32   1              TH0 = 0xFC;                             //设置定时初始值
-  33   1              TF0 = 0;                                //清除TF0标志
-  34   1              TR0 = 1;                                //定时器0开始计时
-  35   1              ET0=1;
-  36   1              EA=1;
-  37   1      }
-  38          
-  39          void Timer_Service() interrupt 1
-  40          {
-  41   1              if(++uslow==200) uslow=0;
-  42   1      }
-  43          
-  44          void UartServer() interrupt 4
-  45          {
-  46   1              if(RI==1)
-  47   1              {
-  48   2                      urecv[urecvindex]=SBUF;
-  49   2                      urecvindex++;
-  50   2                      RI=0;
-  51   2              }
-  52   1              
-  53   1      }
-  54          void main()
-C51 COMPILER V9.60.7.0   MAIN                                                              03/17/2024 21:37:22 PAGE 2   
+   6          #include "led.h"
+   7          #include "seg.h"
+   8          #include <STDIO.H>
+   9          typedef unsigned char u8;
+  10          typedef unsigned int u16;
+  11          u8 kval,kdown,kold,kslow;
+  12          u8 segslow,pos;
+  13          u8 seg[8]={10,10,10,10,10,10,10,10};
+  14          u8 pot[8]={0,0,0,0,0,0,0,0};
+  15          u8 led[8]={0,0,0,0,0,0,0,0};
+  16          u8 uslow;
+  17          u8 urecv[10];
+  18          u8 urecvindex;
+  19          u8 usend[10];
+  20          u8 mode;
+  21          u8 delay100;
+  22          float t;
+  23          float v;
+  24          char str1[15];
+  25          char str2[15];
+  26          bit flag=1;
+  27          bit ledflag;
+  28          void Key_Pro()
+  29          {
+  30   1              if(kslow) return;
+  31   1              kslow=1;
+  32   1              kval=Key_Read();
+  33   1              kdown=kval&(kval^kold);
+  34   1              kold=kval;
+  35   1              switch(kdown)
+  36   1              {
+  37   2                      case 4:
+  38   2                              flag=0;
+  39   2                              break;
+  40   2                      case 5:
+  41   2                              if(!flag)
+  42   2                                      flag=1;
+  43   2                              break;
+  44   2                      case 12:
+  45   2                              if(mode==0)
+  46   2                              {
+  47   3                                      str1[5]=(u8)t/10+'0';
+  48   3                                      str1[6]=(u8)t%10+'0';
+  49   3                                      str1[7]='.';
+  50   3                                      str1[8]=(u16)(t*10)%10+'0';
+  51   3                                      str1[9]='C';
+  52   3      
+  53   3                                      SendString(str1);
+  54   3                              }
+C51 COMPILER V9.60.7.0   MAIN                                                              03/24/2024 00:34:21 PAGE 2   
 
-  55          {
-  56   1              P2=P2&0x1f|0x80;
-  57   1              P0=0xff;
-  58   1              Timer0_Init();
-  59   1              UartInit();
-  60   1              SendByte(0xa0);
-  61   1              while(1)
-  62   1              {
-  63   2                      Uart_Pro();
-  64   2              }
-  65   1      }
-  66                  
+  55   2                              else
+  56   2                              {
+  57   3                                      str2[8]=(u8)v%10+'0';
+  58   3                                      str2[9]='.';
+  59   3                                      str2[10]=(u8)(v*10)%10+'0';
+  60   3                                      str2[11]=(u16)(v*100)%10+'0';
+  61   3                                      str2[12]='V';
+  62   3                                      //sprintf(str2,"Voltage:%.2f",v);
+  63   3                                      SendString(str2);
+  64   3                              }
+  65   2                              break;
+  66   2              }
+  67   1      }
+  68          void Seg_Pro()
+  69          {
+  70   1              if(segslow) return;
+  71   1              segslow=1;
+  72   1              t=rd_t();
+  73   1              v=Ad_Read(0x03)/51.0;
+  74   1              switch(mode)
+  75   1              {
+  76   2                      case 0:
+  77   2                              seg[0]=11;
+  78   2                              seg[1]=1;
+  79   2                              seg[5]=(u8)t/10;
+  80   2                              seg[6]=(u8)t%10;
+  81   2                              seg[7]=(u16)(t*10)%10;
+  82   2                              pot[6]=1;
+  83   2                              pot[5]=0;
+  84   2                              break;
+  85   2                      case 1:
+  86   2                              seg[0]=11;
+  87   2                              seg[1]=2;
+  88   2                              seg[5]=(u8)v%10;
+  89   2                              seg[6]=(u8)(v*10)%10;
+  90   2                              seg[7]=(u16)(v*100)%10;
+  91   2                              pot[6]=0;
+  92   2                              pot[5]=1;
+  93   2                              break;
+  94   2                              
+  95   2              }
+  96   1      }
+  97          
+  98          void Led_Pro()
+  99          {
+ 100   1              if(t>=28)
+ 101   1                      Relay(1);
+ 102   1              else
+ 103   1                      Relay(0);
+ 104   1              if(v>3.6)
+ 105   1                      Beep(1);
+ 106   1              else
+ 107   1                      Beep(0);
+ 108   1              led[0]=(mode==0);
+ 109   1              led[1]=(mode==1);
+ 110   1              if(flag==1)
+ 111   1              {
+ 112   2                      led[2]=0;
+ 113   2                      delay100=0;
+ 114   2              }
+ 115   1      }
+ 116          void Uart_Pro()
+C51 COMPILER V9.60.7.0   MAIN                                                              03/24/2024 00:34:21 PAGE 3   
+
+ 117          {
+ 118   1              if(uslow) return ;
+ 119   1              uslow=1;
+ 120   1              
+ 121   1              if(urecv[0]=='A')
+ 122   1                      mode=0;
+ 123   1              if(urecv[0]=='B')
+ 124   1                      mode=1;
+ 125   1              
+ 126   1      }
+ 127          void Timer0_Init(void)          //1毫秒@12.000MHz
+ 128          {
+ 129   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+ 130   1              TMOD &= 0xF0;                   //设置定时器模式
+ 131   1              TL0 = 0x18;                             //设置定时初始值
+ 132   1              TH0 = 0xFC;                             //设置定时初始值
+ 133   1              TF0 = 0;                                //清除TF0标志
+ 134   1              TR0 = 1;                                //定时器0开始计时
+ 135   1              ET0=1;
+ 136   1              EA=1;
+ 137   1      }
+ 138          
+ 139          void Timer_Service() interrupt 1
+ 140          {
+ 141   1              if(++kslow==10) kslow=0;
+ 142   1              if(++segslow==500) segslow=0;
+ 143   1              if(++pos==8) pos=0;
+ 144   1              if(++uslow==200) uslow=0;
+ 145   1              
+ 146   1              Seg_Display(pos,seg[pos],pot[pos]);
+ 147   1              Led_Display(pos,led[pos]);
+ 148   1              if(!flag)
+ 149   1              {       
+ 150   2                      if(++delay100==100)
+ 151   2                      {
+ 152   3                              led[2]=~led[2];
+ 153   3                              delay100=0;
+ 154   3                      }
+ 155   2              }
+ 156   1      }
+ 157          
+ 158          void UartServer() interrupt 4
+ 159          {
+ 160   1              if(RI==1)
+ 161   1              {
+ 162   2                      if(flag)
+ 163   2                              urecv[urecvindex]=SBUF;
+ 164   2                      //urecvindex++;
+ 165   2                      RI=0;
+ 166   2              }
+ 167   1              
+ 168   1      }
+ 169          
+ 170          void sysinit()
+ 171          {
+ 172   1              P0=0xff;
+ 173   1              P2=P2&0x1f|0x80;
+ 174   1              P2=P2&0x1f;
+ 175   1              
+ 176   1              P0=0x00;
+ 177   1              P2=P2&0x1f|0xa0;
+ 178   1              P2=P2&0x1f;
+C51 COMPILER V9.60.7.0   MAIN                                                              03/24/2024 00:34:21 PAGE 4   
+
+ 179   1      }
+ 180          void Delay750ms()               //@12.000MHz
+ 181          {
+ 182   1              unsigned char i, j, k;
+ 183   1      
+ 184   1              i = 35;
+ 185   1              j = 51;
+ 186   1              k = 182;
+ 187   1              do
+ 188   1              {
+ 189   2                      do
+ 190   2                      {
+ 191   3                              while (--k);
+ 192   3                      } while (--j);
+ 193   2              } while (--i);
+ 194   1      }
+ 195          
+ 196          void main()
+ 197          {
+ 198   1                                              sprintf(str1,"TEMP:%.1f°C",t);
+ 199   1              sysinit();
+ 200   1              rd_t();
+ 201   1              Ad_Read(0x03);
+ 202   1              Delay750ms();
+ 203   1              Timer0_Init();
+ 204   1              UartInit();
+ 205   1              while(1)
+ 206   1              {
+ 207   2                      Key_Pro();
+ 208   2                      Seg_Pro();
+ 209   2                      Led_Pro();
+ 210   2                      Uart_Pro();
+ 211   2              }
+ 212   1      }
+ 213                  
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    126    ----
-   CONSTANT SIZE    =   ----    ----
+   CODE SIZE        =    889    ----
+   CONSTANT SIZE    =     13    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     22    ----
+   DATA SIZE        =     92    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
+   BIT SIZE         =      2    ----
 END OF MODULE INFORMATION.
 
 

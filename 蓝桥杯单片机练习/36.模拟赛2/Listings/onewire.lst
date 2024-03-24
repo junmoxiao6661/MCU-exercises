@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/17/2024 21:37:22 PAGE 1   
+C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/24/2024 00:34:21 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ONEWIRE
@@ -62,7 +62,7 @@ line level    source
   51   1      }
   52          
   53          //
-C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/17/2024 21:37:22 PAGE 2   
+C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/24/2024 00:34:21 PAGE 2   
 
   54          bit init_ds18b20(void)
   55          {
@@ -79,10 +79,26 @@ line level    source
   66   1        
   67   1              return initflag;
   68   1      }
+  69          
+  70          float rd_t()
+  71          {
+  72   1              unsigned char low=0,high=0;
+  73   1              init_ds18b20();
+  74   1              Write_DS18B20(0xCC);
+  75   1              Write_DS18B20(0x44);
+  76   1              init_ds18b20();
+  77   1              Write_DS18B20(0xCC);
+  78   1              Write_DS18B20(0xBE);
+  79   1              low=Read_DS18B20();
+  80   1              high=Read_DS18B20();
+  81   1              
+  82   1              return ((high<<8)|low)*0.0625;
+  83   1              
+  84   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    121    ----
+   CODE SIZE        =    176    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

@@ -66,3 +66,19 @@ bit init_ds18b20(void)
   
   	return initflag;
 }
+
+float rd_t()
+{
+	unsigned char low=0,high=0;
+	init_ds18b20();
+	Write_DS18B20(0xCC);
+	Write_DS18B20(0x44);
+	init_ds18b20();
+	Write_DS18B20(0xCC);
+	Write_DS18B20(0xBE);
+	low=Read_DS18B20();
+	high=Read_DS18B20();
+	
+	return ((high<<8)|low)*0.0625;
+	
+}

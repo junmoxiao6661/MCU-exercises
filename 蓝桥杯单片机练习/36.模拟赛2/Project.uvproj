@@ -421,6 +421,26 @@
               <FileType>5</FileType>
               <FilePath>.\key.h</FilePath>
             </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\led.h</FilePath>
+            </File>
+            <File>
+              <FileName>seg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\seg.c</FilePath>
+            </File>
+            <File>
+              <FileName>seg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\seg.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
