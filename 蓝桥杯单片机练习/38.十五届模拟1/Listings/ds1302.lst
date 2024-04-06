@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   DS1302                                                            04/02/2024 22:34:06 PAGE 1   
+C51 COMPILER V9.60.7.0   DS1302                                                            04/05/2024 21:37:42 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DS1302
@@ -18,74 +18,73 @@ line level    source
    7          //
    8          #include <STC15F2K60S2.H>
    9          #include <INTRINS.H>
-  10          
-  11          sbit SCK=P1^7;
-  12          sbit SDA=P2^3;
-  13          sbit RST=P1^3;
-  14          void Write_Ds1302(unsigned  char temp) 
-  15          {
-  16   1              unsigned char i;
-  17   1              for (i=0;i<8;i++)       
-  18   1              { 
-  19   2                      SCK = 0;
-  20   2                      SDA = temp&0x01;
-  21   2                      temp>>=1; 
-  22   2                      SCK=1;
-  23   2              }
-  24   1      }   
-  25          
-  26          //
-  27          void Write_Ds1302_Byte( unsigned char address,unsigned char dat )     
-  28          {
-  29   1              RST=0;  _nop_();
-  30   1              SCK=0;  _nop_();
-  31   1              RST=1;  _nop_();  
-  32   1              Write_Ds1302(address);  
-  33   1              Write_Ds1302(dat);              
-  34   1              RST=0; 
-  35   1      }
-  36          
-  37          //
-  38          unsigned char Read_Ds1302_Byte ( unsigned char address )
-  39          {
-  40   1              unsigned char i,temp=0x00;
-  41   1              RST=0;  _nop_();
-  42   1              SCK=0;  _nop_();
-  43   1              RST=1;  _nop_();
-  44   1              Write_Ds1302(address);
-  45   1              for (i=0;i<8;i++)       
-  46   1              {               
-  47   2                      SCK=0;
-  48   2                      temp>>=1;       
-  49   2                      if(SDA)
-  50   2                      temp|=0x80;     
-  51   2                      SCK=1;
-  52   2              } 
-  53   1              RST=0;  _nop_();
-C51 COMPILER V9.60.7.0   DS1302                                                            04/02/2024 22:34:06 PAGE 2   
+  10          sbit SCK=P1^7;
+  11          sbit SDA=P2^3;
+  12          sbit RST=P1^3;
+  13          void Write_Ds1302(unsigned  char temp) 
+  14          {
+  15   1              unsigned char i;
+  16   1              for (i=0;i<8;i++)       
+  17   1              { 
+  18   2                      SCK = 0;
+  19   2                      SDA = temp&0x01;
+  20   2                      temp>>=1; 
+  21   2                      SCK=1;
+  22   2              }
+  23   1      }   
+  24          
+  25          //
+  26          void Write_Ds1302_Byte( unsigned char address,unsigned char dat )     
+  27          {
+  28   1              RST=0;  _nop_();
+  29   1              SCK=0;  _nop_();
+  30   1              RST=1;  _nop_();  
+  31   1              Write_Ds1302(address);  
+  32   1              Write_Ds1302(dat);              
+  33   1              RST=0; 
+  34   1      }
+  35          
+  36          //
+  37          unsigned char Read_Ds1302_Byte ( unsigned char address )
+  38          {
+  39   1              unsigned char i,temp=0x00;
+  40   1              RST=0;  _nop_();
+  41   1              SCK=0;  _nop_();
+  42   1              RST=1;  _nop_();
+  43   1              Write_Ds1302(address);
+  44   1              for (i=0;i<8;i++)       
+  45   1              {               
+  46   2                      SCK=0;
+  47   2                      temp>>=1;       
+  48   2                      if(SDA)
+  49   2                      temp|=0x80;     
+  50   2                      SCK=1;
+  51   2              } 
+  52   1              RST=0;  _nop_();
+  53   1              SCK=0;  _nop_();
+C51 COMPILER V9.60.7.0   DS1302                                                            04/05/2024 21:37:42 PAGE 2   
 
-  54   1              SCK=0;  _nop_();
-  55   1              SCK=1;  _nop_();
-  56   1              SDA=0;  _nop_();
-  57   1              SDA=1;  _nop_();
-  58   1              return (temp);                  
-  59   1      }
-  60          
-  61          void Set_Rtc(unsigned char* rtc)
-  62          {
-  63   1              unsigned char i;
-  64   1              Write_Ds1302_Byte(0x8e,0x00);//写实保护打开
-  65   1              for(i=0;i<3;i++)
-  66   1                      Write_Ds1302_Byte(0x84-2*i,rtc[i]);
-  67   1              Write_Ds1302_Byte(0xe,0x80);//关闭
-  68   1              
-  69   1      }
-  70          void Read_Rtc(unsigned char* rtc)
-  71          {
-  72   1              unsigned char i;
-  73   1              for(i=0;i<3;i++)
-  74   1                      rtc[i]=Read_Ds1302_Byte(0x85-2*i);
-  75   1      }
+  54   1              SCK=1;  _nop_();
+  55   1              SDA=0;  _nop_();
+  56   1              SDA=1;  _nop_();
+  57   1              return (temp);                  
+  58   1      }
+  59          
+  60          void Set_Rtc(unsigned char* rtc)
+  61          {
+  62   1              unsigned char i;
+  63   1              Write_Ds1302_Byte(0x8e,0x00);//写实保护打开
+  64   1              for(i=0;i<3;i++)
+  65   1                      Write_Ds1302_Byte(0x84-2*i,rtc[i]);
+  66   1              Write_Ds1302_Byte(0xe,0x80);//关闭
+  67   1              
+  68   1      }
+  69          void Read_Rtc(unsigned char* rtc)
+  70          {
+  71   1              unsigned char i;
+  72   1              for(i=0;i<3;i++)
+  73   1                      rtc[i]=Read_Ds1302_Byte(0x85-2*i);
+  74   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

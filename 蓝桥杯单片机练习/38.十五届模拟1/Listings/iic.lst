@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   IIC                                                               04/02/2024 22:34:06 PAGE 1   
+C51 COMPILER V9.60.7.0   IIC                                                               04/05/2024 21:37:42 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE IIC
@@ -62,7 +62,7 @@ line level    source
   51   2              scl = 0;
   52   2                      I2C_Delay(DELAY_TIME);
   53   2              if(byt & 0x80){
-C51 COMPILER V9.60.7.0   IIC                                                               04/02/2024 22:34:06 PAGE 2   
+C51 COMPILER V9.60.7.0   IIC                                                               04/05/2024 21:37:42 PAGE 2   
 
   54   3                  sda = 1;
   55   3              }
@@ -126,7 +126,7 @@ line level    source
  113   1              I2CStart();
  114   1              I2CSendByte(0xa0);
  115   1              I2CWaitAck();
-C51 COMPILER V9.60.7.0   IIC                                                               04/02/2024 22:34:06 PAGE 3   
+C51 COMPILER V9.60.7.0   IIC                                                               04/05/2024 21:37:42 PAGE 3   
 
  116   1              I2CSendByte(addr);
  117   1              I2CWaitAck();
@@ -158,11 +158,50 @@ line level    source
  143   2              }
  144   1              I2CStop();
  145   1      }
- 146          
+ 146          void operate_delay(unsigned char t)
+ 147          {
+ 148   1              unsigned char i;
+ 149   1              
+ 150   1              while(t--){
+ 151   2                      for(i=0; i<112; i++);
+ 152   2              }
+ 153   1      }
+ 154          void Write(unsigned char addr,unsigned char dat)
+ 155          {
+ 156   1              I2CStart();
+ 157   1              I2CSendByte(0xA0);
+ 158   1              I2CWaitAck();
+ 159   1              I2CSendByte(addr);
+ 160   1              I2CWaitAck();
+ 161   1              I2CSendByte(dat);
+ 162   1              I2CWaitAck();
+ 163   1              operate_delay(10);
+ 164   1              I2CStop();
+ 165   1      }
+ 166          unsigned char Read(unsigned char addr)
+ 167          {
+ 168   1              unsigned char temp=0;
+ 169   1              I2CStart();
+ 170   1              I2CSendByte(0xA0);
+ 171   1              I2CWaitAck();
+ 172   1              I2CSendByte(addr); // 写地址
+ 173   1              I2CWaitAck();
+ 174   1              
+ 175   1              I2CStart();
+ 176   1              I2CSendByte(0xA1);
+ 177   1              I2CWaitAck();
+C51 COMPILER V9.60.7.0   IIC                                                               04/05/2024 21:37:42 PAGE 4   
+
+ 178   1              temp=I2CReceiveByte();
+ 179   1              I2CSendAck(1);
+ 180   1              I2CStop();
+ 181   1              return temp;
+ 182   1      }
+ 183          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    302    ----
+   CODE SIZE        =    382    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

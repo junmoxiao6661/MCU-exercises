@@ -4,7 +4,6 @@
 #include "key.h"
 #include "seg.h"
 #include "led.h"
-#include <STC15F2K60S2.H>
 #include <stdio.h>
 
 typedef unsigned char u8;
@@ -15,14 +14,18 @@ u8 segslow,pos;
 u8 seg[8]={10,10,10,10,10,10,10,10};
 u8 pot[8]={0,0,0,0,0,0,0,0};
 u8 led[8]={0,0,0,0,0,0,0,0};
-u8 time[3]={0x00,0x00,0x00};
+u8 time[3]={0x23,0x09,0x59};
 u8 mode;
 u8 arr[4];
 u8 arr_pos;
 u8 code key_map[19]={0,0,0,0,0,0,1,0,8,5,2,0,9,6,3,0,10,7,4};
 u8 start_t[2];
-u8 date[2];
+u8 hsave,msave;
 u8 dat=0;
+u16 save;
+u8 high,low;
+bit flag=0;
+bit saveflag=0;
 void Key_Pro()
 {
 	if(kslow) return ;
@@ -30,33 +33,54 @@ void Key_Pro()
 	kval=Key_Read();
 	kdown=kval&(kval^kold);
 	kold=kval;
+	
 	switch(kdown)
 	{
 		case 4:
-			if(++mode==3) {mode=0,arr[0]=10,arr[1]=10,arr[2]=10,arr[3]=10,arr_pos=0;}
+			if(++mode==3) 
+			{
+				mode=0,arr[0]=10,arr[1]=10,arr[2]=10,arr[3]=10,arr_pos=0,save=0,flag=0,saveflag=0;
+			}
 			break;
 		case 5:
 			if(mode==1)
-			{arr[0]=10,arr[1]=10,arr[2]=10,arr[3]=10,arr_pos=0;}
+			{arr[0]=10,arr[1]=10,arr[2]=10,arr[3]=10,arr_pos=0,save=0,flag=0;}
 			break;
 	}
 	if(key_map[kdown]&&mode==1)
 	{
-		start_t[0]=time[0];
-		start_t[1]=time[1];
+		if(!flag)
+		{
+			start_t[0]=time[0];
+			start_t[1]=time[1];
+			flag=1;
+		}
 		if(arr_pos<4)
 			arr[arr_pos++]=key_map[kdown]-1;
 	}
 }
-
+void Save_data()
+{
+	
+}
 void Seg_Pro()
 {
 	char i;
-	u8 low,high;
 	u16 temp=0;
 	if(segslow) return ;
 	segslow=1;
 	Read_Rtc(time);
+	if(mode==2)
+	{
+		hsave=(start_t[0]/16)*10+start_t[0]%16;
+		msave=(start_t[1]/16)*10+start_t[1]%16;
+			Write(0,hsave);
+			Write(1,msave);
+			high=save/256;
+			low=save%256;
+			Write(2,high);
+			Write(3,low);
+	}
 	switch(mode)
 	{
 		case 0:
@@ -74,16 +98,13 @@ void Seg_Pro()
 			seg[1]=10;
 			seg[2]=10;
 			seg[3]=10;
-			/*for(i=0;i<arr_pos;i++)
+			for(i=0;i<arr_pos;i++)
 				temp=temp*10+arr[i];
 			seg[4]=arr_pos<4?10:temp/1000;
 			seg[5]=arr_pos<3?10:temp/100%10;
 			seg[6]=arr_pos<2?10:temp/10%10;
-			seg[7]=arr_pos<1?10:temp%10;*/
-			seg[4]=10;
-			seg[5]=10;
-			seg[6]=10;
-			seg[7]=dat;
+			seg[7]=arr_pos<1?10:temp%10;
+			save=temp;
 			break;
 		case 2:
 			seg[0]=13;
@@ -94,18 +115,11 @@ void Seg_Pro()
 			seg[5]=11;
 			seg[6]=start_t[1]/16;
 			seg[7]=start_t[1]%16;
-			Write_EEPROM(&start_t[0],0,1);
-			Write_EEPROM(&start_t[1],1,1);
-			low=temp/256;
-			high=temp%256;
-			sprintf(&date[0],"%x",low);
-			sprintf(&date[1],"%x",high);
-			Write_EEPROM(&date[0],2,1);
-			Write_EEPROM(&date[1],3,1);
 			break;
 	}
 	
 }
+
 void Led_Pro()
 {
 	led[0]=(mode==0);
@@ -132,6 +146,7 @@ void Timer0_Service() interrupt 1
 	Seg_Display(pos,seg[pos],pot[pos]);
 	Led_Display(pos,led[pos]);
 }
+
 void sysinit()
 {
 	P0=0xff;
@@ -143,15 +158,15 @@ void sysinit()
 void main()
 {
 	sysinit();
-	Timer0_Init();
 	Set_Rtc(time);
-	//Read_EEPROM(&time[0],0,1);
-	//Read_EEPROM(&time[1],1,1);
-	Read_EEPROM(&dat,2,1);
+	start_t[0]=Read(0)/10*16+Read(0)%10;
+	start_t[1]=Read(1)/10*16+Read(1)%10;
+	Timer0_Init();
 	while(1)
 	{
 		Key_Pro();
 		Seg_Pro();
 		Led_Pro();
+		
 	}
 }

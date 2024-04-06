@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "STDIO.H": "cpp",
+        "INTRINS.H": "cpp",
+        "stc15f2k60s2.h": "c",
+        "STC15F2K60S2.H": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

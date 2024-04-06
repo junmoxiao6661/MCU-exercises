@@ -143,4 +143,41 @@ void Read_EEPROM(unsigned char *str,unsigned char addr,unsigned char num)
 	}
 	I2CStop();
 }
+void operate_delay(unsigned char t)
+{
+	unsigned char i;
+	
+	while(t--){
+		for(i=0; i<112; i++);
+	}
+}
+void Write(unsigned char addr,unsigned char dat)
+{
+	I2CStart();
+	I2CSendByte(0xA0);
+	I2CWaitAck();
+	I2CSendByte(addr);
+	I2CWaitAck();
+	I2CSendByte(dat);
+	I2CWaitAck();
+	operate_delay(10);
+	I2CStop();
+}
+unsigned char Read(unsigned char addr)
+{
+	unsigned char temp=0;
+	I2CStart();
+	I2CSendByte(0xA0);
+	I2CWaitAck();
+	I2CSendByte(addr); // 写地址
+	I2CWaitAck();
+	
+	I2CStart();
+	I2CSendByte(0xA1);
+	I2CWaitAck();
+	temp=I2CReceiveByte();
+	I2CSendAck(1);
+	I2CStop();
+	return temp;
+}
 
