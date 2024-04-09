@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              03/17/2024 18:28:51 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              04/08/2024 20:39:53 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -13,96 +13,264 @@ line level    source
    3          #include "key.h"
    4          #include "seg.h"
    5          #include "led.h"
-   6          typedef unsigned char u8;
-   7          typedef unsigned int u16;
-   8          
-   9          u8 kval,kslow,kdown,kold;
-  10          u8 segslow,pos;
-  11          u8 seg[8]={10,10,10,10,10,10,10,10};
-  12          u8 pot[8]={0,0,0,0,0,0,0,0};
-  13          u8 led[8]={0,0,0,0,0,0,0,0};
-  14          u8 mode;
-  15          u16 led_t=400;
-  16          u16 led_cnt=0;
-  17          u8 led_pos=0;
-  18          void Key_Pro()
-  19          {
-  20   1              if(kslow) return ;
-  21   1              kslow=1;
-  22   1              kval=Key_Read();
-  23   1              kdown=kval&(kval^kold);
-  24   1              kold=kval;
-  25   1      }
-  26          
-  27          void Seg_Pro()
+   6          
+   7          typedef unsigned char u8;
+   8          typedef unsigned int u16;
+   9          
+  10          u8 kval,kslow,kdown,kold;
+  11          u8 segslow,pos;
+  12          u8 seg[8]={10,10,10,10,10,10,10,10};
+  13          u8 pot[8]={0,0,0,0,0,0,0,0};
+  14          u8 led[8]={0,0,0,0,0,0,0,0};
+  15          u16 ledtime[4]={400,400,400,400};
+  16          u16 distime[4]={400,400,400,400};
+  17          u8 savetime[4];
+  18          u8 ledindex;
+  19          u8 ledmode,ledpos;
+  20          u8 level,ledcnt;
+  21          u16 delay400;
+  22          u8 segmode;
+  23          bit segflag;
+  24          u8 mode;
+  25          bit ledflag;
+  26          u16 leddelay;
+  27          void Key_Pro()
   28          {
-  29   1              if(segslow) return ;
-  30   1              segslow=1;
-  31   1              switch(mode)
-  32   1              {
-  33   2                      case 0:
-  34   2                              seg[0]=0;
-  35   2                              seg[1]=mode+1;
-  36   2                              seg[2]=0;
-  37   2                              break;
-  38   2              }
-  39   1      }
-  40          
-  41          void Led_Pro()
-  42          {
-  43   1              if(mode==0) 
-  44   1              {
-  45   2                      if(cnt==400)
-*** ERROR C202 IN LINE 45 OF main.c: 'cnt': undefined identifier
-  46   2                              led[led_pos]=0;
-  47   2                              led[++led_pos]=1;
-  48   2              }
-  49   1      }
-  50          void Timer0_Init(void)          //1毫秒@12.000MHz
-  51          {
-  52   1              AUXR &= 0x7F;                   //定时器时钟12T模式
-  53   1              TMOD &= 0xF0;                   //设置定时器模式
-C51 COMPILER V9.60.7.0   MAIN                                                              03/17/2024 18:28:51 PAGE 2   
+  29   1              u8 i;
+  30   1              if(kslow) return ;
+  31   1              kslow=1;
+  32   1              kval=Key_Read();
+  33   1              kdown=kval&(kval^kold);
+  34   1              kold=kval;
+  35   1              if(segmode==0)
+  36   1              {
+  37   2                      if(kold==4)
+  38   2                              mode=1;
+  39   2                      else
+  40   2                              mode=0;
+  41   2              }
+  42   1              switch(kdown)
+  43   1              {
+  44   2                      case 6:
+  45   2                              if(++segmode==3) segmode=0;
+  46   2                              if(segmode==0)
+  47   2                              {
+  48   3                                      segmode=1;
+  49   3                                      segmode=0;
+  50   3                                      for(i=0;i<4;i++)
+  51   3                                      {
+  52   4                                              ledtime[i]=distime[i];
+  53   4                                              savetime[i]=distime[i]/100;
+  54   4                                      }
+C51 COMPILER V9.60.7.0   MAIN                                                              04/08/2024 20:39:53 PAGE 2   
 
-  54   1              TL0 = 0x18;                             //设置定时初始值
-  55   1              TH0 = 0xFC;                             //设置定时初始值
-  56   1              TF0 = 0;                                //清除TF0标志
-  57   1              TR0 = 1;                                //定时器0开始计时
-  58   1              ET0 = 1;                                //使能定时器0中断
-  59   1              EA=1;
-  60   1      }
-  61          
-  62          void Timer0_Isr(void) interrupt 1
-  63          {
-  64   1              if(++kslow==10) kslow=0;
-  65   1              if(++segslow==500) segslow=0;
-  66   1              if(++pos==8) pos=0;
-  67   1              Seg_Display(pos,seg[pos],pot[pos]);
-  68   1              Led_Display(pos,led[pos]);
-  69   1              if(mode==0)
-  70   1              {
-  71   2                      led_cnt++;
-  72   2              }
-  73   1      }
-  74          void sysinit()
-  75          {
-  76   1              P0=0xff;
-  77   1              P2=P2&0x1f|0x80;
-  78   1              P2&=0x1f;
-  79   1              P0=0x00;
-  80   1              P2=P2&0x1f|0xa0;
-  81   1              P2&=0x1f;
-  82   1      }
-  83          void main()
-  84          {
-  85   1              sysinit();
-  86   1              Timer0_Init();
-  87   1              while(1)
-  88   1              {
-  89   2                      Key_Pro();
-  90   2                      Seg_Pro();
-  91   2                      Led_Pro();
-  92   2              }
-  93   1      }
+  55   3                                      EEPROM_Write(savetime,0,4);
+  56   3                              }
+  57   2                              break;
+  58   2                      case 5:
+  59   2                              if(segmode==1)
+  60   2                              {
+  61   3                                      if(++ledindex==4) ledindex=0;
+  62   3                              }
+  63   2                              else if(segmode==2)
+  64   2                              {
+  65   3                                      distime[ledindex]+=100;
+  66   3                                      if(distime[ledindex]>1200)
+  67   3                                              distime[ledindex]=1200;
+  68   3                              }
+  69   2                              break;
+  70   2                      case 4:
+  71   2                              if(segmode==1)
+  72   2                              {
+  73   3                                      if(--ledindex==255) ledindex=3;
+  74   3                              }
+  75   2                              else if(segmode==2)
+  76   2                              {
+  77   3                                      distime[ledindex]-=100;
+  78   3                                      if(distime[ledindex]<400)
+  79   3                                              distime[ledindex]=400;
+  80   3                              }
+  81   2                              break;
+  82   2                      case 7:
+  83   2                              ledflag^=1;
+  84   2                              break;
+  85   2              }
+  86   1      }
+  87          
+  88          void Seg_Pro()
+  89          {
+  90   1              u8 i;
+  91   1              if(segslow) return ;
+  92   1              segslow=1;
+  93   1              level=AD_Read(0x43)/64;
+  94   1              if(mode==0)
+  95   1              {
+  96   2                      seg[0]=11;
+  97   2                      seg[1]=ledindex+1;
+  98   2                      seg[2]=11;
+  99   2                      seg[4]=distime[ledindex]/1000==0?10:distime[ledindex]/1000;
+ 100   2                      seg[5]=distime[ledindex]/100%10;
+ 101   2                      seg[6]=distime[ledindex]/10%10;
+ 102   2                      seg[7]=distime[ledindex]%10;
+ 103   2                      if(segmode==1)
+ 104   2                      {
+ 105   3                              seg[0]=segflag?10:11;
+ 106   3                              seg[1]=segflag?10:ledindex+1;
+ 107   3                              seg[2]=segflag?10:11;
+ 108   3                      }
+ 109   2                      else if(segmode==2)
+ 110   2                      {
+ 111   3                              seg[4]=segflag?10:(distime[ledindex]/1000==0?10:distime[ledindex]/1000);
+ 112   3                              seg[5]=segflag?10:distime[ledindex]/100%10;
+ 113   3                              seg[6]=segflag?10:distime[ledindex]/10%10;
+ 114   3                              seg[7]=segflag?10:distime[ledindex]%10;
+ 115   3                      }
+ 116   2              }
+C51 COMPILER V9.60.7.0   MAIN                                                              04/08/2024 20:39:53 PAGE 3   
 
-C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+ 117   1              else
+ 118   1              {
+ 119   2                      
+ 120   2                      for(i=0;i<6;i++)
+ 121   2                              seg[i]=10;
+ 122   2                      seg[6]=11;
+ 123   2                      seg[7]=level+1;
+ 124   2              }
+ 125   1      }
+ 126                  
+ 127          void Led_Pro()
+ 128          {
+ 129   1              u8 i;
+ 130   1              if(ledflag)
+ 131   1              {
+ 132   2                      if(leddelay==distime[ledmode])
+ 133   2                      {
+ 134   3                              leddelay=0;
+ 135   3                              switch(ledmode)
+ 136   3                              {
+ 137   4                                      case 0:
+ 138   4                                              if(++ledpos==8)
+ 139   4                                              {
+ 140   5                                                      ledpos=7;
+ 141   5                                                      ledmode=1;
+ 142   5                                              }
+ 143   4                                              break;
+ 144   4                                      case 1:
+ 145   4                                              if(--ledpos==255)
+ 146   4                                              {
+ 147   5                                                      ledpos=7;
+ 148   5                                                      ledmode=2;
+ 149   5                                              }
+ 150   4                                              break;
+ 151   4                                      case 2:
+ 152   4                                              ledpos+=9;
+ 153   4                                              if(ledpos>34)
+ 154   4                                              {
+ 155   5                                                      ledpos=34;
+ 156   5                                                      ledmode=3;
+ 157   5                                              }
+ 158   4                                              break;
+ 159   4                                      case 3:
+ 160   4                                              ledpos-=9;
+ 161   4                                              if(ledpos>200)
+ 162   4                                              {
+ 163   5                                                      ledpos=0;
+ 164   5                                                      ledmode=0;
+ 165   5                                              }
+ 166   4                                              break;
+ 167   4                              }
+ 168   3                              
+ 169   3                      }
+ 170   2              }
+ 171   1              if(ledmode<2)
+ 172   1              {
+ 173   2                      for(i=0;i<8;i++)
+ 174   2                      led[i]=ledflag&&(i==ledpos);
+ 175   2              }
+ 176   1              else
+ 177   1              {
+ 178   2                      for(i=0;i<8;i++)
+C51 COMPILER V9.60.7.0   MAIN                                                              04/08/2024 20:39:53 PAGE 4   
+
+ 179   2                              led[i]=ledflag&&((i==ledpos/10)||(i==ledpos%10));
+ 180   2              }
+ 181   1      }
+ 182          void Timer0_Init(void)          //1毫秒@12.000MHz
+ 183          {
+ 184   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+ 185   1              TMOD &= 0xF0;                   //设置定时器模式
+ 186   1              TL0 = 0x18;                             //设置定时初始值
+ 187   1              TH0 = 0xFC;                             //设置定时初始值
+ 188   1              TF0 = 0;                                //清除TF0标志
+ 189   1              TR0 = 1;                                //定时器0开始计时
+ 190   1              ET0 = 1;                                //使能定时器0中断
+ 191   1              EA=1;
+ 192   1      }
+ 193          
+ 194          void Timer0_Isr(void) interrupt 1
+ 195          {
+ 196   1              if(++kslow==10) kslow=0;
+ 197   1              if(++segslow==8) segslow=0;
+ 198   1              if(++pos==8) pos=0;
+ 199   1              //if(++ledcnt==12) ledcnt=0;
+ 200   1              if(++delay400==400)
+ 201   1              {
+ 202   2                      delay400=0;
+ 203   2                      segflag^=1;
+ 204   2              }
+ 205   1              if(ledflag)
+ 206   1                      leddelay++;
+ 207   1              if(mode||segmode)
+ 208   1                      Seg_Display(pos,seg[pos],pot[pos]);
+ 209   1              else
+ 210   1                      Seg_Display(pos,10,0);
+ 211   1              //if(ledcnt<=((level+1)*3))
+ 212   1              Led_Display(pos,led[pos]);
+ 213   1              //else
+ 214   1                      //Led_Display(pos,0);
+ 215   1              
+ 216   1      }
+ 217          void sysinit()
+ 218          {
+ 219   1              P0=0xff;
+ 220   1              P2=P2&0x1f|0x80;
+ 221   1              P2&=0x1f;
+ 222   1              P0=0x00;
+ 223   1              P2=P2&0x1f|0xa0;
+ 224   1              P2&=0x1f;
+ 225   1      }
+ 226          void main()
+ 227          {
+ 228   1              u8 i;
+ 229   1              sysinit();
+ 230   1              AD_Read(0x03);
+ 231   1              EEPROM_Read(savetime,0,4);
+ 232   1              for(i=0;i<4;i++)
+ 233   1              {
+ 234   2                      distime[i]=savetime[i]*100;
+ 235   2              }
+ 236   1              Timer0_Init();
+ 237   1              while(1)
+ 238   1              {
+ 239   2                      
+ 240   2                      Key_Pro();
+C51 COMPILER V9.60.7.0   MAIN                                                              04/08/2024 20:39:53 PAGE 5   
+
+ 241   2                      Seg_Pro();
+ 242   2                      Led_Pro();
+ 243   2              }
+ 244   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1130    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     61    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
