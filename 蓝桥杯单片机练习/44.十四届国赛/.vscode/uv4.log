@@ -1,0 +1,18 @@
+Build target 'Target 1'
+compiling main.c...
+onewire.h(1): warning C245: unknown #pragma, line ignored
+compiling onewire.c...
+compiling iic.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?I2CRECEIVEBYTE?IIC
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_I2CSENDACK?IIC
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DA_WRITE?IIC
+
+Program Size: data=9.1 xdata=0 code=849
+".\Objects\Project" - 0 Error(s), 4 Warning(s).
+Build Time Elapsed:  00:00:01

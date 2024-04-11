@@ -1,0 +1,1 @@
+unsigned int Wave_Data(char changedis,unsigned int speed);
