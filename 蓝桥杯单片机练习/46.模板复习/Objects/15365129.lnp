@@ -1,0 +1,11 @@
+".\Objects\key.obj",
+".\Objects\led.obj",
+".\Objects\main.obj",
+".\Objects\seg.obj",
+".\Objects\uart.obj",
+".\Objects\ultrasound.obj",
+".\Objects\onewire.obj",
+".\Objects\ds1302.obj",
+".\Objects\iic.obj" 
+TO ".\Objects\15365129" 
+PRINT(".\Listings\15365129.m51") RAMSIZE(256) 
