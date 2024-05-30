@@ -1,0 +1,108 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              05/29/2024 22:24:25 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include "onewire.h"
+   3          #include "ds1302.h"
+   4          #include "iic.h"
+   5          #include "led.h"
+   6          #include "key.h"
+   7          #include "seg.h"
+   8          
+   9          typedef unsigned char u8;
+  10          typedef unsigned int u16;
+  11          
+  12          u8 kval,kslow,kdown,kold;
+  13          u8 segslow,pos;
+  14          u8 seg[8]={10,10,10,10,10,10,10,10};
+  15          u8 led[8]={0,0,0,0,0,0,0,0};
+  16          u8 pot[8]={0,0,0,0,0,0,0,0};
+  17          float t;
+  18          void Key_Pro()
+  19          {
+  20   1              if(kslow) return ;
+  21   1              kslow=1;
+  22   1              kval=Key_Read();
+  23   1              kdown=kval&(kold^kval);
+  24   1              kold=kval;
+  25   1      }
+  26          void Seg_Pro()
+  27          {
+  28   1              if(segslow) return ;
+  29   1              segslow=1;
+  30   1              t=AD_Read(0x03)/51.0;
+  31   1              seg[5]=(u8)t;
+  32   1              seg[6]=(u8)(t*10)%10;
+  33   1              seg[7]=(u16)(t*100)%10;
+  34   1              pot[5]=1;
+  35   1              
+  36   1      }
+  37          void Led_Pro()
+  38          {
+  39   1      
+  40   1      }
+  41          void Timer0_Init(void)          //1毫秒@12.000MHz
+  42          {
+  43   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+  44   1              TMOD &= 0xF0;                   //设置定时器模式
+  45   1              TL0 = 0x18;                             //设置定时初始值
+  46   1              TH0 = 0xFC;                             //设置定时初始值
+  47   1              TF0 = 0;                                //清除TF0标志
+  48   1              TR0 = 1;                                //定时器0开始计时
+  49   1              ET0=1;
+  50   1              EA=1;
+  51   1      }
+  52          
+  53          void Timer0_Service() interrupt 1
+  54          {
+C51 COMPILER V9.60.7.0   MAIN                                                              05/29/2024 22:24:25 PAGE 2   
+
+  55   1              if(++kslow==10) kslow=0;
+  56   1              if(++segslow==500) segslow=0;
+  57   1              if(++pos==8) pos=0;
+  58   1              Seg_Display(pos,seg[pos],pot[pos]);
+  59   1              Led_Display(pos,led[pos]);
+  60   1      }
+  61                  
+  62          void sysinit()
+  63          {
+  64   1              P0=0xff;
+  65   1              P2=P2&0x1f|0x80;
+  66   1              P2=P2&0x1f;
+  67   1              P0=0x00;
+  68   1              P2=P2&0x1f|0xa0;
+  69   1              P2=P2&0x1f;
+  70   1      }
+  71          void main()
+  72          {
+  73   1              sysinit();
+  74   1              AD_Read(0x03);
+  75   1              Timer0_Init();
+  76   1              while(1)
+  77   1              {
+  78   2                      Key_Pro();
+  79   2                      Seg_Pro();
+  80   2                      Led_Pro();
+  81   2              }
+  82   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    329    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     34    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

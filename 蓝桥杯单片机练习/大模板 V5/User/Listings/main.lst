@@ -1,0 +1,184 @@
+C51 COMPILER V9.54   MAIN                                                                  06/01/2023 17:35:36 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Driver) DEBUG OBJECTEXTEND PRI
+                    -NT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /* 
+   2              ´óÄ£°å V5 ¸üĞÂËµÃ÷
+   3              
+   4              1¡¢ÓÅ»¯¼õËÙÎÊÌâ ¹²ÓÃÒ»¸öÖĞ¶Ï¼õËÙ±äÁ¿ Ê¹ÓÃ±êÖ¾Î»½øĞĞÅĞ¶Ï ±ÜÃâÄ³Ò»Ê±¼äµãÎŞ·¨½øÈë×Ó³ÌĞòµÄÎÊÌâ
+   5              
+   6              2¡¢ĞÂÔöÊı¾İ¶ÁÈ¡º¯Êı ÊıÂë¹ÜÏÔÊ¾º¯ÊıÖ»×öÊı¾İÏÔÊ¾ ¶ÁÈ¡²¿·Ö·ÖÀë¿ªÀ´ ¼õÉÙ¼õËÙÖÜÆÚ²»Í¬¶Ô×ÊÔ´µÄÀË·Ñ
+   7              
+   8              3¡¢ĞÂÔöÂË²¨Êı¾İ´¦Àíº¯Êı ½â¾öÖØ¸´¶ÁÈ¡ºóÊı¾İÅ¼¶ûÌø¶¯µÄÎÊÌâ
+   9              
+  10              ------------------------------------
+  11              
+  12              ĞÂÔö±äÁ¿ËµÃ÷£º
+  13              
+  14              Proc_Flag - ×Ó³ÌĞòÖ´ĞĞ±êÖ¾Î» Ä¬ÈÏ 1 -> °´¼ü´¦Àíº¯Êı 2 -> ÊıÂë¹ÜÏÔÊ¾º¯Êı 3 -> ´®¿Ú´¦Àíº¯Êı 4 -> Êı¾İ¶ÁÈ¡º
+             -¯Êı£¨Ä£°åÒÔ¶ÁÈ¡³¬Éù²¨ÎªÀı£©
+  15              
+  16              ------------------------------------
+  17              
+  18              ĞÂÔöº¯Êı¿âËµÃ÷£º    
+  19              
+  20              Filtering.h - ÂË²¨´¦Àíº¯Êı×¨ÓÃÍ·ÎÄ¼ş Moving_Average_Filter -> »¬¶¯Æ½¾ùÂË²¨Æ÷ Median_Filter -> ÖĞÖµÂË²¨Æ÷
+  21              
+  22              Tpis £ºÊı¾İÂË²¨Ö»Ö§³ÖÕûĞÎÊı¾İ Éæ¼°µ½Ğ¡Êı ÇëÏÈ½øĞĞÂË²¨ºó ÔÙ¶ÔÊı¾İ½øĞĞĞ¡Êı»¯´¦Àí
+  23              
+  24          */
+  25          
+  26          /* Í·ÎÄ¼şÉùÃ÷Çø */
+  27          #include <STC15F2K60S2.H>//µ¥Æ¬»ú¼Ä´æÆ÷×¨ÓÃÍ·ÎÄ¼ş
+  28          #include <Init.h>//³õÊ¼»¯µ×²ãÇı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  29          #include <Led.h>//Ledµ×²ãÇı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  30          #include <Key.h>//°´¼üµ×²ãÇı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  31          #include <Seg.h>//ÊıÂë¹Üµ×²ãÇı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  32          #include <Uart.h>//´®¿Úµ×²ãÇı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  33          #include <stdio.h>//±ê×¼¿âµ×²ãÇı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  34          #include <Filtering.h>//Êı¾İÂË²¨Çı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  35          #include <ultrasound.h>//³¬Éù²¨µ×²ãÇı¶¯×¨ÓÃÍ·ÎÄ¼ş
+  36          
+  37          /* ±äÁ¿ÉùÃ÷Çø */
+  38          unsigned int Proc_Slow_Down;//×Óº¯Êı¼õËÙ±äÁ¿
+  39          unsigned char Key_Val,Key_Down,Key_Old,Key_Up;//°´¼ü×¨ÓÃ±äÁ¿
+  40          unsigned char Seg_Buf[8] = {10,10,10,10,10,10,10,10};//ÊıÂë¹ÜÏÔÊ¾Êı¾İ´æ·ÅÊı×é
+  41          unsigned char Seg_Point[8] = {0,0,0,0,0,0,0,0};//ÊıÂë¹ÜĞ¡ÊıµãÊı¾İ´æ·ÅÊı×é
+  42          unsigned char Seg_Pos;//ÊıÂë¹ÜÉ¨Ãè×¨ÓÃ±äÁ¿
+  43          unsigned char ucLed[8] = {0,0,0,0,0,0,0,0};//LedÏÔÊ¾Êı¾İ´æ·ÅÊı×é
+  44          unsigned char Uart_Recv[10];//´®¿Ú½ÓÊÕÊı¾İ´¢´æÊı×é Ä¬ÈÏ10¸ö×Ö½Ú Èô½ÓÊÕÊı¾İ½Ï³¤ ¿É¸ü¸Ä×î´ó×Ö½ÚÊı
+  45          unsigned char Uart_Recv_Index;//´®¿Ú½ÓÊÕÊı×éÖ¸Õë
+  46          unsigned char Proc_Flag;//×Ó³ÌĞòÖ´ĞĞ±êÖ¾Î» 
+  47          unsigned char Wave_Data;//³¬Éù²¨Êı¾İ´¢´æ±äÁ¿
+  48          
+  49          /* ¼üÅÌ´¦Àíº¯Êı */
+  50          void Key_Proc()
+  51          {
+  52   1        if(Proc_Flag != 1) return;
+  53   1        Proc_Flag = 0;//¼üÅÌ¼õËÙ³ÌĞò
+C51 COMPILER V9.54   MAIN                                                                  06/01/2023 17:35:36 PAGE 2   
+
+  54   1      
+  55   1        Key_Val = Key_Read();//ÊµÊ±¶ÁÈ¡¼üÂëÖµ
+  56   1        Key_Down = Key_Val & (Key_Old ^ Key_Val);//²¶×½°´¼üÏÂ½µÑØ
+  57   1        Key_Up = ~Key_Val & (Key_Old ^ Key_Val);//²¶×½°´¼üÉÏ½µÑØ
+  58   1        Key_Old = Key_Val;//¸¨ÖúÉ¨Ãè±äÁ¿
+  59   1      
+  60   1      }
+  61          
+  62          /* Êı¾İ¶ÁÈ¡º¯Êı */
+  63          void Read_Proc()
+  64          {
+  65   1        unsigned char Filter_Dat;//ÂË²¨Ç°Êı¾İ½ÓÊÕ±äÁ¿
+  66   1        switch(Proc_Flag)
+  67   1        {
+  68   2          case 4://³¬Éù²¨¶ÁÈ¡
+  69   2            Filter_Dat = Ut_Wave_Data();//¶ÁÈ¡³¬Éù²¨Êı¾İ
+  70   2            Wave_Data = Median_Filter(Filter_Dat);//»¬¶¯Æ½¾ùÊıÂË²¨´¦Àí
+  71   2            Proc_Flag = 0;//Çå³ı±êÖ¾Î»×´Ì¬
+  72   2          break;
+  73   2        }
+  74   1      }
+  75          
+  76          /* ĞÅÏ¢´¦Àíº¯Êı */
+  77          void Seg_Proc()
+  78          {
+  79   1        if(Proc_Flag != 2) return;
+  80   1        Proc_Flag = 0;//ÊıÂë¹Ü¼õËÙ³ÌĞò
+  81   1      
+  82   1      }
+  83          
+  84          /* ÆäËûÏÔÊ¾º¯Êı */
+  85          void Led_Proc()
+  86          {
+  87   1        
+  88   1      }
+  89          
+  90          /* ´®¿Ú´¦Àíº¯Êı */
+  91          void Uart_Proc()
+  92          {
+  93   1        if(Proc_Flag != 3) return;
+  94   1        Proc_Flag = 0;//´®¿Ú¼õËÙ³ÌĞò
+  95   1        
+  96   1      }
+  97          
+  98          /* ¶¨Ê±Æ÷0ÖĞ¶Ï³õÊ¼»¯º¯Êı */
+  99          void Timer0Init(void)   //1ºÁÃë@12.000MHz
+ 100          {
+ 101   1        AUXR &= 0x7F;   //¶¨Ê±Æ÷Ê±ÖÓ12TÄ£Ê½
+ 102   1        TMOD &= 0xF0;   //ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
+ 103   1        TL0 = 0x18;   //ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+ 104   1        TH0 = 0xFC;   //ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+ 105   1        TF0 = 0;    //Çå³ıTF0±êÖ¾
+ 106   1        TR0 = 1;    //¶¨Ê±Æ÷0¿ªÊ¼¼ÆÊ±
+ 107   1        ET0 = 1;    //¶¨Ê±Æ÷ÖĞ¶Ï0´ò¿ª
+ 108   1        EA = 1;     //×ÜÖĞ¶Ï´ò¿ª
+ 109   1      }
+ 110          
+ 111          /* ¶¨Ê±Æ÷0ÖĞ¶Ï·şÎñº¯Êı */
+ 112          void Timer0Server() interrupt 1
+ 113          {  
+ 114   1        if(++Proc_Slow_Down == 500) Proc_Slow_Down = 0;//×Ó³ÌĞò¼õËÙ×¨ÓÃ
+ 115   1        
+C51 COMPILER V9.54   MAIN                                                                  06/01/2023 17:35:36 PAGE 3   
+
+ 116   1        if(Proc_Slow_Down % 9) Proc_Flag = 1;
+ 117   1        
+ 118   1        switch(Proc_Slow_Down)
+ 119   1        {
+ 120   2          case 50: Proc_Flag = 2; break;
+ 121   2          case 100: Proc_Flag = 3; break;
+ 122   2          case 200: Proc_Flag = 4; break;
+ 123   2        }
+ 124   1        
+ 125   1        if(++Seg_Pos == 8) Seg_Pos = 0;//ÊıÂë¹ÜÏÔÊ¾×¨ÓÃ
+ 126   1        Seg_Disp(Seg_Pos,Seg_Buf[Seg_Pos],Seg_Point[Seg_Pos]);
+ 127   1        Led_Disp(Seg_Pos,ucLed[Seg_Pos]);
+ 128   1      }
+ 129          
+ 130          /* ´®¿Ú1ÖĞ¶Ï·şÎñº¯Êı */
+ 131          void Uart1Server() interrupt 4
+ 132          {
+ 133   1        if(RI == 1) //´®¿Ú½ÓÊÕÊı¾İ
+ 134   1        {
+ 135   2          Uart_Recv[Uart_Recv_Index] = SBUF;
+ 136   2          Uart_Recv_Index++;
+ 137   2          RI = 0;
+ 138   2        }
+ 139   1      }
+ 140          
+ 141          /* Main */
+ 142          void main()
+ 143          {
+ 144   1        System_Init();
+ 145   1        Timer0Init();
+ 146   1        UartInit();
+ 147   1        while (1)
+ 148   1        {
+ 149   2          Key_Proc();
+ 150   2          Read_Proc();
+ 151   2          Seg_Proc();
+ 152   2          Led_Proc();
+ 153   2          Uart_Proc();
+ 154   2        }
+ 155   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    323    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     44    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

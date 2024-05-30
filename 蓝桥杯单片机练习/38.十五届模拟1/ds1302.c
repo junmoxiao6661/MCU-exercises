@@ -63,7 +63,7 @@ void Set_Rtc(unsigned char* rtc)
 	Write_Ds1302_Byte(0x8e,0x00);//写实保护打开
 	for(i=0;i<3;i++)
 		Write_Ds1302_Byte(0x84-2*i,rtc[i]);
-	Write_Ds1302_Byte(0xe,0x80);//关闭
+	Write_Ds1302_Byte(0x8e,0x80);//关闭
 	
 }
 void Read_Rtc(unsigned char* rtc)

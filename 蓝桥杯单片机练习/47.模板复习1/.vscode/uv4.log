@@ -1,0 +1,46 @@
+Build target 'Target 1'
+compiling main.c...
+compiling onewire.c...
+onewire.c(22): error C202: 'DQ': undefined identifier
+onewire.c(23): error C202: 'DQ': undefined identifier
+onewire.c(25): error C202: 'DQ': undefined identifier
+onewire.c(39): error C202: 'DQ': undefined identifier
+onewire.c(41): error C202: 'DQ': undefined identifier
+onewire.c(42): error C202: 'DQ': undefined identifier
+onewire.c(56): error C202: 'DQ': undefined identifier
+onewire.c(58): error C202: 'DQ': undefined identifier
+onewire.c(60): error C202: 'DQ': undefined identifier
+onewire.c(62): error C202: 'DQ': undefined identifier
+compiling ds1302.c...
+ds1302.c(13): error C202: 'SCK': undefined identifier
+ds1302.c(14): error C202: 'SDA': undefined identifier
+ds1302.c(16): error C202: 'SCK': undefined identifier
+ds1302.c(23): error C202: 'RST': undefined identifier
+compiling iic.c...
+iic.c(14): warning C206: '_nop_': missing function-prototype
+iic.c(14): error C264: intrinsic '_nop_': declaration/activation error
+iic.c(24): error C202: 'sda': undefined identifier
+iic.c(25): error C202: 'scl': undefined identifier
+iic.c(27): error C202: 'sda': undefined identifier
+iic.c(29): error C202: 'scl': undefined identifier
+iic.c(35): error C202: 'sda': undefined identifier
+iic.c(36): error C202: 'scl': undefined identifier
+iic.c(38): error C202: 'sda': undefined identifier
+iic.c(48): error C202: 'scl': undefined identifier
+iic.c(51): error C202: 'sda': undefined identifier
+iic.c(54): error C202: 'sda': undefined identifier
+iic.c(57): error C202: 'scl': undefined identifier
+iic.c(62): error C202: 'scl': undefined identifier
+iic.c(71): error C202: 'scl': undefined identifier
+iic.c(74): error C202: 'sda': undefined identifier
+iic.c(76): error C202: 'scl': undefined identifier
+iic.c(87): error C202: 'scl': undefined identifier
+iic.c(89): error C202: 'sda': undefined identifier
+iic.c(90): error C202: 'scl': undefined identifier
+iic.c(99): error C202: 'scl': undefined identifier
+iic.c(100): error C202: 'sda': undefined identifier
+iic.c(102): error C202: 'scl': undefined identifier
+iic.c(104): error C202: 'scl': undefined identifier
+iic.c(105): error C202: 'sda': undefined identifier
+Target not created.
+Build Time Elapsed:  00:00:01
