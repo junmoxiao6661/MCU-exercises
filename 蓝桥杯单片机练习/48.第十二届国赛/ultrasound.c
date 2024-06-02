@@ -28,20 +28,20 @@ void Wave_Init()
 unsigned char Wave_Data()
 {
 	unsigned int time;
-	TMOD&=0x0f;
-	TH1=TL1=0;
+	CMOD&=0x00;
+	CH=CL=0;
 	Wave_Init();
-	TR1=1;
-	while((rx==1)&&(TF1==0));
-	TR1=0;
-	if(TF1==0)
+	CR=1;
+	while((rx==1)&&(CF==0));
+	CR=0;
+	if(CF==0)
 	{
-		time=TH1<<8|TL1;
+		time=CH<<8|CL;
 		return time*0.017;
 	}
 	else
 	{
-		TF1=0;
+		CF=0;
 		return 0;
 	}
 }

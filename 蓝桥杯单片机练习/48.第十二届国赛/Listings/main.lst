@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 11:31:21 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 22:23:00 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -15,167 +15,295 @@ line level    source
    5          #include "led.h"
    6          #include "key.h"
    7          #include "ultrasound.h"
-   8          
-   9          typedef unsigned char u8;
-  10          typedef unsigned int u16;
-  11          
-  12          u8 kval,kslow,kdown,kold;
-  13          u8 pos;
-  14          u16 segslow;
-  15          u8 seg[8]={10,10,10,10,10,10,10,10};
-  16          u8 led[8]={0,0,0,0,0,0,0,0};
-  17          u8 pot[8]={0,0,0,0,0,0,0,0};
-  18          bit mode=0;
-  19          u8 dmode=0;
-  20          u8 tmode=0;
-  21          u8 drmode=0;
-  22          u8 time[3]={0x20,0x20,0x01};
-  23          bit dismode=0;
-  24          void Key_Pro()
-  25          {
-  26   1              if(kslow) return ;
-  27   1              kslow=1;
-  28   1              kval=Key_Read();
-  29   1              kdown=kval&(kval^kold);
-  30   1              kold=kval;
-  31   1              switch(kdown)
-  32   1              {
-  33   2                      case 4:
-  34   2                              mode^=1;
-  35   2                              break;
-  36   2                      case 5:
-  37   2                              if(mode==0)
-  38   2                                      {if(++dmode==3) dmode=0;}
-  39   2                              else if(mode==1)
-  40   2                                      {if(++tmode==2) tmode=0;}
-  41   2                              break;
-  42   2                      case 8:
-  43   2                              if(mode==0&&dmode==1) dismode^=1;
-  44   2                              if(mode==0&&dmode==2) 
-  45   2                                      {if(++drmode==3) drmode=0;}
-  46   2                              break;
-  47   2                      case 9:
-  48   2                              
-  49   2                              break;
-  50   2              }
-  51   1              
-  52   1      }
-  53          void Seg_Pro()
-  54          {
-C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 11:31:21 PAGE 2   
+   8          #include "STDIO.H"
+   9          
+  10          typedef unsigned char u8;
+  11          typedef unsigned int u16;
+  12          
+  13          u8 kval,kslow,kdown,kold;
+  14          u8 pos;
+  15          u16 segslow;
+  16          u8 seg[8]={10,10,10,10,10,10,10,10};
+  17          u8 led[8]={0,0,0,0,0,0,0,0};
+  18          u8 pot[8]={0,0,0,0,0,0,0,0};
+  19          bit mode=0;
+  20          u8 dmode=0;
+  21          u8 tmode=0;
+  22          u8 drmode=0;
+  23          u8 time[3]={0x20,0x20,0x01};
+  24          bit dismode=0;
+  25          u8 ptime=2,pdis=20;
+  26          u8 seg_time=2,seg_dis=20;
+  27          u16 rd1,oldrd1=255;
+  28          u16 dis=0;
+  29          bit light=1;
+  30          bit trigger=0,flag=0;
+  31          u16 maxdis=0,mindis=999,sumdis=0;
+  32          float averagedis=0.0;
+  33          u8 discnt;
+  34          u16 alarmcnt=0;
+  35          bit alarm=0;
+  36          u16 is1s=0;
+  37          
+  38          
+  39          void Key_Pro()
+  40          {
+  41   1              if(kslow) return ;
+  42   1              kslow=1;
+  43   1              kval=Key_Read();
+  44   1              kdown=kval&(kval^kold);
+  45   1              kold=kval;
+  46   1              switch(kdown)
+  47   1              {
+  48   2                      case 4:
+  49   2                              if(mode==0)
+  50   2                                      mode=1,tmode=0;
+  51   2                              else
+  52   2                                      mode=0,dmode=0,ptime=seg_time,pdis=seg_dis;
+  53   2                              break;
+  54   2                      case 5:
+C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 22:23:00 PAGE 2   
 
-  55   1              if(segslow) return ;
-  56   1              segslow=1;
-  57   1              Read_Rtc(time);
-  58   1              if(mode==0)
-  59   1              {
-  60   2                      switch(dmode)
-  61   2                      {
-  62   3                              case 0:
-  63   3                                      seg[0]=time[0]/16;
-  64   3                                      seg[1]=time[0]%16;
-  65   3                                      seg[2]=11;
-  66   3                                      seg[3]=time[1]/16;
-  67   3                                      seg[4]=time[1]%16;
-  68   3                                      seg[5]=11;
-  69   3                                      seg[6]=time[2]/16;
-  70   3                                      seg[7]=time[2]%16;
-  71   3                                      break;
-  72   3                              case 1:
-  73   3                                      seg[0]=12;
-  74   3                                      seg[1]=(dismode==0?13:14);
-  75   3                                      seg[2]=seg[3]=seg[4]=10;
-  76   3                                      
-  77   3                                      break;
-  78   3                              case 2:
-  79   3                                      seg[0]=15;
-  80   3                                      seg[2]=seg[3]=10;
-  81   3                                      switch(drmode)
-  82   3                                      {
-  83   4                                              case 0:
-  84   4                                                      seg[1]=16;
-  85   4                                                      break;
-  86   4                                              case 1:
-  87   4                                                      seg[1]=11;
-  88   4                                                      break;
-  89   4                                              case 2:
-  90   4                                                      seg[1]=17;
-  91   4                                                      break;
-  92   4                                      }
-  93   3                                      break;
-  94   3                      }
-  95   2              }
-  96   1              else
-  97   1              {
-  98   2                      seg[0]=18;
-  99   2                      seg[2]=seg[3]=seg[4]=seg[5]=10;
- 100   2                      switch(tmode)
- 101   2                      {
- 102   3                              case 0:
- 103   3                                      seg[1]=1;
- 104   3                                      break;
- 105   3                              case 1:
- 106   3                                      seg[1]=2;
- 107   3                                      break;
- 108   3                      }
- 109   2              }
- 110   1      }
- 111          void Led_Pro()
- 112          {
- 113   1              
- 114   1      }
- 115          void Timer0_Init(void)          //1毫秒@12.000MHz
- 116          {
-C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 11:31:21 PAGE 3   
+  55   2                              if(mode==0)
+  56   2                              {
+  57   3                                      if(++dmode==3) dmode=0;
+  58   3                                      if(dmode==2) drmode=0;
+  59   3                              }
+  60   2                              else if(mode==1)
+  61   2                                      {if(++tmode==2) tmode=0;}
+  62   2                              break;
+  63   2                      case 8:
+  64   2                              if(mode==0&&dmode==1) dismode^=1;
+  65   2                              if(mode==0&&dmode==2) 
+  66   2                                      {if(++drmode==3) drmode=0;}
+  67   2                              break;
+  68   2                      case 9:
+  69   2                              if(mode==1)
+  70   2                              {
+  71   3                                      if(tmode==0)
+  72   3                                              {if(++seg_time==10) seg_time=2;}
+  73   3                                      else
+  74   3                                      {
+  75   4                                              seg_dis+=10;
+  76   4                                              if(seg_dis>=90)
+  77   4                                                      seg_dis=10;
+  78   4                                      }
+  79   3                              }
+  80   2                              break;
+  81   2              }
+  82   1              
+  83   1      }
+  84          
+  85          void Seg_Pro()
+  86          {
+  87   1              u8 temp;
+  88   1              u16 temp1;
+  89   1              if(segslow) return ;
+  90   1              segslow=1;
+  91   1              Read_Rtc(time);
+  92   1              rd1=AD_Read(0x01);
+  93   1              if(rd1>150)
+  94   1              {
+  95   2                      light=1;
+  96   2                      flag=1;
+  97   2              }
+  98   1              else if(rd1<=150&&flag)
+  99   1              {
+ 100   2                      light=0;
+ 101   2                      trigger=1;
+ 102   2              }
+ 103   1              if(dismode==0)
+ 104   1              {
+ 105   2                      if(trigger)
+ 106   2                      {
+ 107   3                              dis=Wave_Data();
+ 108   3                              trigger=0;
+ 109   3                              flag=0;
+ 110   3                              discnt++;
+ 111   3                              sumdis+=dis;
+ 112   3                              if(dis>maxdis)
+ 113   3                                      maxdis=dis;
+ 114   3                              if(dis<mindis)
+ 115   3                                      mindis=dis;
+ 116   3                              averagedis=sumdis/(float)discnt;
+C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 22:23:00 PAGE 3   
 
- 117   1              AUXR &= 0x7F;                   //定时器时钟12T模式
- 118   1              TMOD &= 0xF0;                   //设置定时器模式
- 119   1              TL0 = 0x18;                             //设置定时初始值
- 120   1              TH0 = 0xFC;                             //设置定时初始值
- 121   1              TF0 = 0;                                //清除TF0标志
- 122   1              TR0 = 1;                                //定时器0开始计时
- 123   1              ET0=1;
- 124   1              EA=1;
- 125   1      }
- 126          void Timer_Service() interrupt 1
- 127          {
- 128   1              if(++kslow==10) kslow=0;
- 129   1              if(++segslow==200) segslow=0;
- 130   1              if(++pos==8) pos=0;
- 131   1              Seg_Display(pos,seg[pos],pot[pos]);
- 132   1              Led_Display(pos,led[pos]);
- 133   1      }
- 134          void sysinit()
- 135          {
- 136   1              P0=0xff;
- 137   1              P2=P2&0x1f|0x80;
- 138   1              P2=P2&0x1f;
- 139   1              P0=0x00;
- 140   1              P2=P2&0x1f|0xa0;
- 141   1              P2=P2&0x1f;
- 142   1      }
- 143          void main()
- 144          {
- 145   1              sysinit();
- 146   1              Set_Rtc(time);
- 147   1              Timer0_Init();
- 148   1              while(1)
- 149   1              {
- 150   2                      Key_Pro();
- 151   2                      Seg_Pro();
- 152   2                      Led_Pro();
- 153   2              }
- 154   1      }
+ 117   3                      }
+ 118   2              }
+ 119   1              else
+ 120   1              {
+ 121   2                      temp=(time[2]/16)*10+time[2]%16;
+ 122   2                      if(temp%ptime==0&&is1s>=800)
+ 123   2                      {
+ 124   3                              is1s=0;
+ 125   3                              dis=Wave_Data();
+ 126   3                              discnt++;
+ 127   3                              sumdis+=dis;
+ 128   3                              if(dis>maxdis)
+ 129   3                                      maxdis=dis;
+ 130   3                              if(dis<mindis)
+ 131   3                                      mindis=dis;
+ 132   3                              averagedis=sumdis/(float)discnt;
+ 133   3                              if(dis>=pdis-5&&dis<=pdis+5)
+ 134   3                                      alarmcnt++;
+ 135   3                              else
+ 136   3                              {
+ 137   4                                      alarmcnt=0;
+ 138   4                                      alarm=0;
+ 139   4                              }
+ 140   3                              if(alarmcnt>=3)
+ 141   3                                      alarm=1;
+ 142   3                              led[7]=~led[7];
+ 143   3                      }       
+ 144   2                      
+ 145   2              }
+ 146   1              if(mode==0)
+ 147   1              {
+ 148   2                      pot[6]=0;
+ 149   2                      switch(dmode)
+ 150   2                      {
+ 151   3                              case 0:
+ 152   3                                      seg[0]=time[0]/16;
+ 153   3                                      seg[1]=time[0]%16;
+ 154   3                                      seg[2]=11;
+ 155   3                                      seg[3]=time[1]/16;
+ 156   3                                      seg[4]=time[1]%16;
+ 157   3                                      seg[5]=11;
+ 158   3                                      seg[6]=time[2]/16;
+ 159   3                                      seg[7]=time[2]%16;
+ 160   3                                      break;
+ 161   3                              case 1:
+ 162   3                                      seg[0]=12;
+ 163   3                                      seg[1]=(dismode==0?13:14);
+ 164   3                                      seg[2]=seg[3]=seg[4]=10;
+ 165   3                                      seg[5]=dis/100==0?10:dis/100;
+ 166   3                                      seg[6]=(dis/100==0&&dis/10%10==0)?10:dis/10%10;
+ 167   3                                      seg[7]=dis%10;
+ 168   3                                      break;
+ 169   3                              case 2:
+ 170   3                                      seg[0]=15;
+ 171   3                                      seg[2]=seg[3]=seg[4]=10;
+ 172   3                                      switch(drmode)
+ 173   3                                      {
+ 174   4                                              case 0:
+ 175   4                                                      seg[1]=16;
+ 176   4                                                      seg[5]=maxdis/100==0?10:maxdis/100;
+ 177   4                                                      seg[6]=(maxdis/100==0&&maxdis/10%10==0)?10:maxdis/10%10;
+ 178   4                                                      seg[7]=maxdis%10;
+C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 22:23:00 PAGE 4   
+
+ 179   4                                                      break;
+ 180   4                                              case 1:
+ 181   4                                                      seg[1]=11;
+ 182   4                                                      pot[6]=1;
+ 183   4                                                      seg[7]=(u16)(averagedis*10)%10;
+ 184   4                                                      temp1=(u16)averagedis;
+ 185   4                                                      seg[6]=temp1%10;
+ 186   4                                                      temp1/=10;
+ 187   4                                                      temp=5;
+ 188   4                                                      while(temp1!=0)
+ 189   4                                                      {
+ 190   5                                                              seg[temp]=temp1%10;
+ 191   5                                                              temp1/=10;
+ 192   5                                                              temp--;
+ 193   5                                                      }
+ 194   4                                                      break;
+ 195   4                                              case 2:
+ 196   4                                                      seg[1]=17;
+ 197   4                                                      seg[5]=mindis/100==0?10:mindis/100;
+ 198   4                                                      seg[6]=(mindis/100==0&&mindis/10%10==0)?10:mindis/10%10;
+ 199   4                                                      seg[7]=mindis%10;
+ 200   4                                                      break;
+ 201   4                                      }
+ 202   3                                      break;
+ 203   3                      }
+ 204   2              }
+ 205   1              else
+ 206   1              {
+ 207   2                      seg[0]=18;
+ 208   2                      seg[2]=seg[3]=seg[4]=seg[5]=10;
+ 209   2                      pot[6]=0;
+ 210   2                      switch(tmode)
+ 211   2                      {
+ 212   3                              case 0:
+ 213   3                                      seg[1]=1;
+ 214   3                                      seg[6]=seg_time/10;
+ 215   3                                      seg[7]=seg_time%10;
+ 216   3                                      break;
+ 217   3                              case 1:
+ 218   3                                      seg[1]=2;
+ 219   3                                      seg[6]=seg_dis/10;
+ 220   3                                      seg[7]=seg_dis%10;
+ 221   3                                      break;
+ 222   3                      }
+ 223   2              }
+ 224   1      }
+ 225          void Led_Pro()
+ 226          {
+ 227   1              if(mode==0)
+ 228   1              {
+ 229   2                      led[0]=dmode==0;
+ 230   2                      led[1]=dmode==1;
+ 231   2                      led[2]=dmode==2;
+ 232   2              }
+ 233   1              led[3]=dismode==0;
+ 234   1              led[4]=alarm;
+ 235   1              led[5]=light;
+ 236   1      }
+ 237          void Timer0_Init(void)          //1毫秒@12.000MHz
+ 238          {
+ 239   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+ 240   1              TMOD &= 0xF0;                   //设置定时器模式
+C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 22:23:00 PAGE 5   
+
+ 241   1              TL0 = 0x18;                             //设置定时初始值
+ 242   1              TH0 = 0xFC;                             //设置定时初始值
+ 243   1              TF0 = 0;                                //清除TF0标志
+ 244   1              TR0 = 1;                                //定时器0开始计时
+ 245   1              ET0=1;
+ 246   1              EA=1;
+ 247   1      }
+ 248          void Timer_Service() interrupt 1
+ 249          {
+ 250   1              if(++kslow==10) kslow=0;
+ 251   1              if(++segslow==500) segslow=0;
+ 252   1              if(++pos==8) pos=0;
+ 253   1              ++is1s;
+ 254   1              Seg_Display(pos,seg[pos],pot[pos]);
+ 255   1              Led_Display(pos,led[pos]);
+ 256   1      }
+ 257          void sysinit()
+ 258          {
+ 259   1              P0=0xff;
+ 260   1              P2=P2&0x1f|0x80;
+ 261   1              P2=P2&0x1f;
+ 262   1              P0=0x00;
+ 263   1              P2=P2&0x1f|0xa0;
+ 264   1              P2=P2&0x1f;
+ 265   1      }
+ 266          void main()
+ 267          {
+ 268   1              sysinit();
+ 269   1              Set_Rtc(time);
+ 270   1              Wave_Data();
+ 271   1              Timer0_Init();
+ 272   1              while(1)
+ 273   1              {
+ 274   2                      Key_Pro();
+ 275   2                      Seg_Pro();
+ 276   2                      Led_Pro();
+ 277   2              }
+ 278   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    483    ----
+   CODE SIZE        =   1439    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     37    ----
+   DATA SIZE        =     62       1
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =      2    ----
+   BIT SIZE         =      6    ----
 END OF MODULE INFORMATION.
 
 

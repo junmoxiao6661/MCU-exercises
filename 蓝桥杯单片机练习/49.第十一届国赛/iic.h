@@ -1,0 +1,1 @@
+unsigned char AD_Read(unsigned char addr);

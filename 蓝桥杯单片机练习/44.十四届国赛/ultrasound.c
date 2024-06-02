@@ -9,7 +9,7 @@ void Delay12us()		//@12.000MHz
 
 	_nop_();
 	_nop_();
-	i = 33;
+	i = 38;
 	while (--i);
 }
 

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              05/29/2024 22:24:25 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 17:18:11 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -24,7 +24,7 @@ line level    source
   14          u8 seg[8]={10,10,10,10,10,10,10,10};
   15          u8 led[8]={0,0,0,0,0,0,0,0};
   16          u8 pot[8]={0,0,0,0,0,0,0,0};
-  17          float t;
+  17          u16 t;
   18          void Key_Pro()
   19          {
   20   1              if(kslow) return ;
@@ -37,11 +37,11 @@ line level    source
   27          {
   28   1              if(segslow) return ;
   29   1              segslow=1;
-  30   1              t=AD_Read(0x03)/51.0;
-  31   1              seg[5]=(u8)t;
-  32   1              seg[6]=(u8)(t*10)%10;
-  33   1              seg[7]=(u16)(t*100)%10;
-  34   1              pot[5]=1;
+  30   1              t=AD_Read(0x01);
+  31   1              seg[5]=t/100;
+  32   1              //256
+  33   1              seg[6]=t/10%10;
+  34   1              seg[7]=t%10;
   35   1              
   36   1      }
   37          void Led_Pro()
@@ -62,7 +62,7 @@ line level    source
   52          
   53          void Timer0_Service() interrupt 1
   54          {
-C51 COMPILER V9.60.7.0   MAIN                                                              05/29/2024 22:24:25 PAGE 2   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/30/2024 17:18:11 PAGE 2   
 
   55   1              if(++kslow==10) kslow=0;
   56   1              if(++segslow==500) segslow=0;
@@ -83,7 +83,7 @@ line level    source
   71          void main()
   72          {
   73   1              sysinit();
-  74   1              AD_Read(0x03);
+  74   1              AD_Read(0x01);
   75   1              Timer0_Init();
   76   1              while(1)
   77   1              {
@@ -95,11 +95,11 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    329    ----
+   CODE SIZE        =    287    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     34    ----
+   DATA SIZE        =     32    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

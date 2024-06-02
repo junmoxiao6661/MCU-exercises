@@ -14,7 +14,7 @@ u8 segslow,pos;
 u8 seg[8]={10,10,10,10,10,10,10,10};
 u8 led[8]={0,0,0,0,0,0,0,0};
 u8 pot[8]={0,0,0,0,0,0,0,0};
-float t;
+u16 t;
 void Key_Pro()
 {
 	if(kslow) return ;
@@ -27,11 +27,11 @@ void Seg_Pro()
 {
 	if(segslow) return ;
 	segslow=1;
-	t=AD_Read(0x03)/51.0;
-	seg[5]=(u8)t;
-	seg[6]=(u8)(t*10)%10;
-	seg[7]=(u16)(t*100)%10;
-	pot[5]=1;
+	t=AD_Read(0x01);
+	seg[5]=t/100;
+	//256
+	seg[6]=t/10%10;
+	seg[7]=t%10;
 	
 }
 void Led_Pro()
@@ -71,7 +71,7 @@ void sysinit()
 void main()
 {
 	sysinit();
-	AD_Read(0x03);
+	AD_Read(0x01);
 	Timer0_Init();
 	while(1)
 	{

@@ -1,0 +1,74 @@
+C51 COMPILER V9.60.7.0   ULTRASOUND                                                        05/31/2024 22:28:17 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ULTRASOUND
+OBJECT MODULE PLACED IN .\Objects\ultrasound.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE ultrasound.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\
+                    -ultrasound.lst) OBJECT(.\Objects\ultrasound.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <INTRINS.H>
+   3          sbit tx=P1^0;
+   4          sbit rx=P1^1;
+   5          
+   6          void Delay12us()                //@12.000MHz
+   7          {
+   8   1              unsigned char i;
+   9   1      
+  10   1              _nop_();
+  11   1              _nop_();
+  12   1              i = 38;
+  13   1              while (--i);
+  14   1      }
+  15          
+  16          void Wave_Init()
+  17          {
+  18   1              unsigned char i;
+  19   1              for(i=0;i<8;i++)
+  20   1              {
+  21   2                      tx=1;
+  22   2                      Delay12us();
+  23   2                      tx=0;
+  24   2                      Delay12us();
+  25   2              }
+  26   1      }
+  27          
+  28          unsigned char Wave_Data()
+  29          {
+  30   1              unsigned int time;
+  31   1              CMOD&=0x00;
+  32   1              CH=CL=0;
+  33   1              Wave_Init();
+  34   1              CR=1;
+  35   1              while(rx==1&&CF==0);
+  36   1              CR=0;
+  37   1              if(CF==0)
+  38   1              {
+  39   2                      time=CH<<8|CL;
+  40   2                      return time*0.017;
+  41   2              }
+  42   1              else
+  43   1              {
+  44   2                      CF=0;
+  45   2                      return 0;
+  46   2              }
+  47   1              
+  48   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     81    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.7.0   ULTRASOUND                                                        05/31/2024 22:28:17 PAGE 2   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

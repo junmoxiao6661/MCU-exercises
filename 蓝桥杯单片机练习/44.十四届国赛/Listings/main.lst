@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              04/11/2024 21:25:24 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 23:50:00 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   52   2                      switch(kdown)
   53   2                      {
   54   3                              case 4:
-C51 COMPILER V9.60.7.0   MAIN                                                              04/11/2024 21:25:24 PAGE 2   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 23:50:00 PAGE 2   
 
   55   3                                      if(++mode==3) mode=0;
   56   3                                      break;
@@ -111,12 +111,12 @@ line level    source
   99   3                              case 9:
  100   3                                      if(mode==0)
  101   3                                      {
- 102   4                                              /*if(writedis<=dalow)
+ 102   4                                              if(writedis<=dalow)
  103   4                                                      DA_Write(dalow*51.0);
  104   4                                              else if(writedis>=90)
  105   4                                                      DA_Write(255);
  106   4                                              else
- 107   4                                                      DA_Write(((5.0-dalow)/80.0)*writedis)*/
+ 107   4                                                      DA_Write(((5.0-dalow)/80.0)*writedis);
  108   4                                      }
  109   3                                      if(mode==1)
  110   3                                      {
@@ -126,7 +126,7 @@ line level    source
  114   5                                                      if(tempdis<10) tempdis=10;
  115   5                                              }
  116   4                                              else
-C51 COMPILER V9.60.7.0   MAIN                                                              04/11/2024 21:25:24 PAGE 3   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 23:50:00 PAGE 3   
 
  117   4                                              {
  118   5                                                      if(--tempt==255) tempt=0;
@@ -190,7 +190,7 @@ line level    source
  176   4                                              else
  177   4                                                      seg[i]=10;
  178   4                                              temp/=10;
-C51 COMPILER V9.60.7.0   MAIN                                                              04/11/2024 21:25:24 PAGE 4   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 23:50:00 PAGE 4   
 
  179   4                                      }
  180   3                              }
@@ -254,7 +254,7 @@ line level    source
  238   4                                                      if(temp)
  239   4                                                              seg[i]=temp%10;
  240   4                                                      else
-C51 COMPILER V9.60.7.0   MAIN                                                              04/11/2024 21:25:24 PAGE 5   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 23:50:00 PAGE 5   
 
  241   4                                                              seg[i]=10;
  242   4                                                      temp/=10;
@@ -318,7 +318,7 @@ line level    source
  300   1              TF0 = 0;                                //清除TF0标志
  301   1              TR0 = 1;                                //定时器0开始计时
  302   1              ET0=1;
-C51 COMPILER V9.60.7.0   MAIN                                                              04/11/2024 21:25:24 PAGE 6   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 23:50:00 PAGE 6   
 
  303   1              EA=1;
  304   1      }
@@ -382,7 +382,7 @@ line level    source
  362          void main()
  363          {
  364   1              sysinit();
-C51 COMPILER V9.60.7.0   MAIN                                                              04/11/2024 21:25:24 PAGE 7   
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 23:50:00 PAGE 7   
 
  365   1              Read_T();
  366   1              Delay750ms();
@@ -397,7 +397,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1567    ----
+   CODE SIZE        =   1684    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

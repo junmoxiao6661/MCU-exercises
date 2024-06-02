@@ -1,0 +1,306 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 14:13:01 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include "ds1302.h"
+   3          #include "onewire.h"
+   4          #include "iic.h"
+   5          #include "key.h"
+   6          #include "led.h"
+   7          #include "seg.h"
+   8          
+   9          typedef unsigned char u8;
+  10          typedef unsigned int u16;
+  11          
+  12          u8 kval,kslow,kdown,kold;
+  13          u8 seg[8]={10,10,10,10,10,10,10,10};
+  14          u8 pos;
+  15          u16 segslow;
+  16          u8 led[8]={0,0,0,0,0,0,0,0};
+  17          u8 pot[8]={0,0,0,0,0,0,0,0};
+  18          bit mode=0;
+  19          u8 dmode=0;
+  20          u8 pmode=0;
+  21          u8 time[3]={0x16,0x59,0x50};
+  22          float t,light;
+  23          u8 phour=17,seghour=17;
+  24          u8 pt=25,segt=25;
+  25          u8 pled=4,segled=4;
+  26          bit led1=0;
+  27          bit lightflag=0;
+  28          u16 delay3s=0,delay3s1=0;
+  29          void Key_Pro()
+  30          {
+  31   1              if(kslow) return ;
+  32   1              kslow=1;
+  33   1              kval=Key_Read();
+  34   1              kdown=kval&(kval^kold);
+  35   1              kold=kval;
+  36   1              switch(kdown)
+  37   1              {
+  38   2                      case 4:
+  39   2                              if(mode==0)
+  40   2                              {                               
+  41   3                                      mode=1,pmode=0;
+  42   3                              }
+  43   2                              else if(mode==1)
+  44   2                              {
+  45   3                                      mode=0,dmode=0;
+  46   3                                      led[pled-1]=0;
+  47   3                                      phour=seghour,pt=segt,pled=segled;
+  48   3                              }
+  49   2                              break;
+  50   2                      case 5:
+  51   2                              if(mode==0)
+  52   2                              {
+  53   3                                      if(++dmode==3) dmode=0;
+  54   3                              }
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 14:13:01 PAGE 2   
+
+  55   2                              else
+  56   2                              {
+  57   3                                      if(++pmode==3) pmode=0;
+  58   3                              }
+  59   2                              break;
+  60   2                      case 8:
+  61   2                              if(mode==1)
+  62   2                              {
+  63   3                                      if(pmode==0)
+  64   3                                      {
+  65   4                                              if(--seghour==255)
+  66   4                                              {
+  67   5                                                      seghour=0;
+  68   5                                              }
+  69   4                                      }
+  70   3                                      else if(pmode==1)
+  71   3                                      {
+  72   4                                              if(--segt==255)
+  73   4                                              {
+  74   5                                                      segt=0;
+  75   5                                              }
+  76   4                                      }
+  77   3                                      else if(pmode==2)
+  78   3                                      {
+  79   4                                              if(--segled==3)
+  80   4                                              {
+  81   5                                                      segled=4;
+  82   5                                              }
+  83   4                                      }
+  84   3                              }
+  85   2                              break;
+  86   2                      case 9:
+  87   2                              if(mode==1)
+  88   2                              {
+  89   3                                      if(pmode==0)
+  90   3                                      {
+  91   4                                              if(++seghour==24)
+  92   4                                              {
+  93   5                                                      seghour=23;
+  94   5                                              }
+  95   4                                      }
+  96   3                                      else if(pmode==1)
+  97   3                                      {
+  98   4                                              if(++segt==100)
+  99   4                                              {
+ 100   5                                                      segt=99;
+ 101   5                                              }
+ 102   4                                      }
+ 103   3                                      else if(pmode==2)
+ 104   3                                      {
+ 105   4                                              if(++segled==9)
+ 106   4                                              {
+ 107   5                                                      segled=8;
+ 108   5                                              }
+ 109   4                                      }
+ 110   3                              }
+ 111   2                              break;
+ 112   2              }
+ 113   1              
+ 114   1      }
+ 115          
+ 116          void Seg_Pro()
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 14:13:01 PAGE 3   
+
+ 117          {
+ 118   1              if(segslow) return ;
+ 119   1              segslow=1;
+ 120   1              Read_Rtc(time);
+ 121   1              t=rd_t();
+ 122   1              light=AD_Read(0x01)/51.0;
+ 123   1              if(led1==0&&(time[0]/16*10+time[0]%16>=phour))
+ 124   1              {
+ 125   2                      led1=1;
+ 126   2              }
+ 127   1              if((time[0]/16*10+time[0]%16<phour)&&led1==1)
+ 128   1              {
+ 129   2                      led1=0;
+ 130   2              }
+ 131   1              if(led1==1&&(time[0]/16*10+time[0]%16==8))
+ 132   1              {
+ 133   2                      led1=0;
+ 134   2              }
+ 135   1              if(mode==0)
+ 136   1              {
+ 137   2                      pot[2]=pot[6]=0;
+ 138   2                      switch(dmode)
+ 139   2                      {
+ 140   3                              case 0:
+ 141   3                                      seg[0]=time[0]/16;
+ 142   3                                      seg[1]=time[0]%16;
+ 143   3                                      seg[2]=11;
+ 144   3                                      seg[3]=time[1]/16;
+ 145   3                                      seg[4]=time[1]%16;
+ 146   3                                      seg[5]=11;
+ 147   3                                      seg[6]=time[2]/16;
+ 148   3                                      seg[7]=time[2]%16;
+ 149   3                                      break;
+ 150   3                              case 1:
+ 151   3                                      seg[0]=12;
+ 152   3                                      seg[1]=seg[2]=seg[3]=seg[4]=10;
+ 153   3                                      seg[5]=(u8)(t)/10;
+ 154   3                                      seg[6]=(u8)(t)%10;
+ 155   3                                      pot[6]=1;
+ 156   3                                      seg[7]=(u16)(t*10)%10;
+ 157   3                                      break;
+ 158   3                              case 2:
+ 159   3                                      seg[0]=13;
+ 160   3                                      seg[1]=seg[5]=seg[6]=10;
+ 161   3                                      pot[2]=1;
+ 162   3                                      seg[2]=(u8)light;
+ 163   3                                      seg[3]=(u8)(light*10)%10;
+ 164   3                                      seg[4]=(u16)(light*100)%10;
+ 165   3                                      seg[7]=light<3?0:1;
+ 166   3                                      break;
+ 167   3                      }
+ 168   2              }
+ 169   1              else
+ 170   1              {
+ 171   2                      pot[2]=pot[6]=0;
+ 172   2                      seg[0]=14;
+ 173   2                      seg[2]=seg[3]=seg[4]=seg[5]=seg[6]=10;
+ 174   2                      switch(pmode)
+ 175   2                      {
+ 176   3                              case 0:
+ 177   3                                      seg[1]=1;
+ 178   3                                      seg[6]=seghour/10;
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 14:13:01 PAGE 4   
+
+ 179   3                                      seg[7]=seghour%10;
+ 180   3                                      break;
+ 181   3                              case 1:
+ 182   3                                      seg[1]=2;
+ 183   3                                      seg[6]=segt/10;
+ 184   3                                      seg[7]=segt%10;
+ 185   3                                      break;
+ 186   3                              case 2:
+ 187   3                                      seg[1]=3;
+ 188   3                                      seg[7]=segled;
+ 189   3                                      break;
+ 190   3                      }
+ 191   2              }
+ 192   1      }
+ 193          
+ 194          
+ 195          void Led_Pro()
+ 196          {
+ 197   1              led[0]=led1;
+ 198   1              led[1]=t<pt;
+ 199   1              led[2]=lightflag;
+ 200   1              led[pled-1]=light<3;
+ 201   1      }
+ 202          void Timer0_Init(void)          //1毫秒@12.000MHz
+ 203          {
+ 204   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+ 205   1              TMOD &= 0xF0;                   //设置定时器模式
+ 206   1              TL0 = 0x18;                             //设置定时初始值
+ 207   1              TH0 = 0xFC;                             //设置定时初始值
+ 208   1              TF0 = 0;                                //清除TF0标志
+ 209   1              TR0 = 1;                                //定时器0开始计时
+ 210   1              ET0=1;
+ 211   1              EA=1;
+ 212   1      }
+ 213          void Timer0_Service() interrupt 1
+ 214          {
+ 215   1              if(++kslow==10) kslow=0;
+ 216   1              if(++segslow==200) segslow=0;
+ 217   1              if(++pos==8) pos=0;
+ 218   1              if(light<3) 
+ 219   1              {
+ 220   2                      if(++delay3s==3000)
+ 221   2                      {
+ 222   3                              lightflag=1;
+ 223   3                      }
+ 224   2                      delay3s1=0;
+ 225   2              }
+ 226   1              else
+ 227   1              {
+ 228   2                      if(++delay3s1==3000)
+ 229   2                      {
+ 230   3                              lightflag=0;
+ 231   3                      }
+ 232   2                      delay3s=0;
+ 233   2              }
+ 234   1              Seg_Display(pos,seg[pos],pot[pos]);
+ 235   1              Led_Display(pos,led[pos]);
+ 236   1      }
+ 237          void sysinit()
+ 238          {
+ 239   1              P0=0xff;
+ 240   1              P2=P2&0x11f|0x80;
+C51 COMPILER V9.60.7.0   MAIN                                                              05/31/2024 14:13:01 PAGE 5   
+
+ 241   1              P0=0x00;
+ 242   1              P2=P2&0x1f|0xa0;
+ 243   1              P2=P2&0x1f;
+ 244   1      }
+ 245          void Delay750ms()               //@12.000MHz
+ 246          {
+ 247   1              unsigned char i, j, k;
+ 248   1              i = 35;
+ 249   1              j = 51;
+ 250   1              k = 182;
+ 251   1              do
+ 252   1              {
+ 253   2                      do
+ 254   2                      {
+ 255   3                              while (--k);
+ 256   3                      } while (--j);
+ 257   2              } while (--i);
+ 258   1      }
+ 259          
+ 260          void main()
+ 261          {
+ 262   1              sysinit();
+ 263   1              Set_Rtc(time);
+ 264   1              AD_Read(0x01);
+ 265   1              rd_t();
+ 266   1              Delay750ms();
+ 267   1              Timer0_Init();
+ 268   1              while(1)
+ 269   1              {
+ 270   2                      Key_Pro();
+ 271   2                      Seg_Pro();
+ 272   2                      Led_Pro();
+ 273   2              }
+ 274   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1067    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     54    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

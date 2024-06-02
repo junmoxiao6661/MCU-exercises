@@ -99,12 +99,12 @@ void Key_Pro()
 			case 9:
 				if(mode==0)
 				{
-					/*if(writedis<=dalow)
+					if(writedis<=dalow)
 						DA_Write(dalow*51.0);
 					else if(writedis>=90)
 						DA_Write(255);
 					else
-						DA_Write(((5.0-dalow)/80.0)*writedis)*/
+						DA_Write(((5.0-dalow)/80.0)*writedis);
 				}
 				if(mode==1)
 				{
