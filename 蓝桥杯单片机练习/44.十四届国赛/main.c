@@ -5,7 +5,8 @@
 #include "led.h"
 #include "seg.h"
 #include "ultrasound.h"
-
+#include <STRING.H>
+#include <STC15F2K60S2.H>
 typedef unsigned char u8;
 typedef unsigned int u16;
 

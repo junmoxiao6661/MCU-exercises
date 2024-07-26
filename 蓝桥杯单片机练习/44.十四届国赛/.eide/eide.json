@@ -1,0 +1,89 @@
+{
+  "name": "Project",
+  "type": "C51",
+  "dependenceList": [],
+  "srcDirs": [],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": [
+      {
+        "name": "Source Group 1",
+        "files": [
+          {
+            "path": "iic.c"
+          },
+          {
+            "path": "iic.h"
+          },
+          {
+            "path": "key.c"
+          },
+          {
+            "path": "key.h"
+          },
+          {
+            "path": "led.c"
+          },
+          {
+            "path": "led.h"
+          },
+          {
+            "path": "main.c"
+          },
+          {
+            "path": "onewire.c"
+          },
+          {
+            "path": "onewire.h"
+          },
+          {
+            "path": "seg.c"
+          },
+          {
+            "path": "seg.h"
+          },
+          {
+            "path": "ultrasound.c"
+          },
+          {
+            "path": "ultrasound.h"
+          }
+        ],
+        "folders": []
+      }
+    ]
+  },
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "a29655a71f636690f3fc5410e67ffbf0"
+  },
+  "targets": {
+    "Target 1": {
+      "excludeList": [],
+      "toolchain": "Keil_C51",
+      "compileConfig": {
+        "options": "null"
+      },
+      "uploader": "Custom",
+      "uploadConfig": {
+        "bin": "",
+        "commandLine": "",
+        "eraseChipCommand": ""
+      },
+      "uploadConfigMap": {},
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "null/INC/STC"
+        ],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": []
+      }
+    }
+  },
+  "version": "3.3"
+}
